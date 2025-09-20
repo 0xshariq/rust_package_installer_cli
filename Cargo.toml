@@ -1,0 +1,11 @@
+[package]
+name = "rust_package_installer_cli"
+version = "1.0.0"
+authors = ["0xshariq khanshariq92213@gmail.com"]
+edition = "2021"
+description = "Rust wrapper for a TypeScript CLI tool."
+license = "MIT"
+repository = "https://github.com/0xshariq/rust_package_installer_cli"
+readme = "README.md"
+
+[dependencies]
