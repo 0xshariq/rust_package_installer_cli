@@ -6,6 +6,36 @@
 
 A **cross-platform, interactive CLI** to scaffold modern web application templates with support for multiple frameworks, languages, and development tools. Create production-ready projects in seconds!
 
+---
+
+## 🦀 Rust Wrapper (crates.io)
+
+You can also install the CLI via [crates.io](https://crates.io/crates/package-installer-cli) as a Rust binary. The Rust wrapper delegates all logic to the Node.js CLI, so you do not need to rewrite your logic in Rust.
+
+### Install via Cargo
+
+```bash
+cargo install package-installer-cli
+```
+
+### Usage
+
+After installing, run the CLI as usual:
+
+```bash
+package-installer-cli [args]
+```
+
+This will internally run `node dist/index.js` and pass all arguments to your TypeScript CLI.
+
+### Requirements
+
+- Node.js 18.0.0 or higher must be installed
+- `dist/index.js` must be built and available
+- All CLI arguments are forwarded to the TypeScript implementation
+
+---
+
 ## 🚀 Quick Features
 
 - **🎨 Multiple Frameworks**: React, Next.js, Express, Angular, Vue, Rust

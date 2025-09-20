@@ -1,5 +1,5 @@
 [package]
-name = "rust_package_installer_cli"
+name = "package-installer-cli"
 version = "1.0.0"
 authors = ["0xshariq khanshariq92213@gmail.com"]
 edition = "2021"
