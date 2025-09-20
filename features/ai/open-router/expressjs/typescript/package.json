@@ -1,0 +1,6 @@
+{
+    "dependencies": {
+        "@openrouter/ai-sdk-provider": "^1.1.2",
+        "ai": "^5.0.26"
+    }
+}

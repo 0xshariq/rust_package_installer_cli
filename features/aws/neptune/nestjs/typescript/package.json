@@ -1,0 +1,6 @@
+{
+    "dependencies": {
+        "@aws-sdk/client-neptune": "^3.883.0",
+        "@aws-sdk/client-neptune-graph": "^3.883.0"
+    }
+}

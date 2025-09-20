@@ -1,0 +1,40 @@
+// These mixins make it easy to write media queries for device specific CSS.
+// Usage:
+//
+//  @include media-xs-up { sass rules }
+//
+
+@function spacer($index) {
+    @return map-get($spacers, $index);
+}
+
+@function image-url($path) {
+    @return url("#{$image-url-path}#{$path}");
+}
+
+@function font-url($path) {
+    @return url("#{$fonts-url-path}#{$path}");
+}
+
+@mixin font-smoothing($value: on) {
+    @if $value == on {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    @else {
+        -webkit-font-smoothing: subpixel-antialiased;
+        -moz-osx-font-smoothing: auto;
+    }
+}
+
+@mixin media-2x {
+  @media
+  only screen and (-webkit-min-device-pixel-ratio: 2),
+  only screen and (   min--moz-device-pixel-ratio: 2),
+  only screen and (     -o-min-device-pixel-ratio: 2/1),
+  only screen and (        min-device-pixel-ratio: 2),
+  only screen and (                min-resolution: 192dpi),
+  only screen and (                min-resolution: 2dppx) {
+    @content;
+  }
+}

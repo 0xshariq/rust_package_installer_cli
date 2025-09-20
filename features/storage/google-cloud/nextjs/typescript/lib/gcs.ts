@@ -1,0 +1,32 @@
+import { Storage } from "@google-cloud/storage";
+
+const storage = new Storage({
+  projectId: process.env.GCS_PROJECT_ID,
+  credentials: process.env.GCS_CLIENT_EMAIL && process.env.GCS_PRIVATE_KEY
+    ? {
+        client_email: process.env.GCS_CLIENT_EMAIL,
+        private_key: (process.env.GCS_PRIVATE_KEY || "").replace(/\\n/g, "\n"),
+      }
+    : undefined, // or rely on GOOGLE_APPLICATION_CREDENTIALS (path to key file) or inline credentials via GCS_CLIENT_EMAIL, GCS_PRIVATE_KEY (replace \n correctly).
+});
+
+const BUCKET = storage.bucket(process.env.GCS_BUCKET as string);
+
+export async function uploadFile(key: string, base64: string) {
+  const buffer = Buffer.from(base64, "base64");
+  const file = BUCKET.file(key);
+  await file.save(buffer, { resumable: false });
+  await file.makePublic().catch(() => {}); // optional
+  const [metadata] = await file.getMetadata();
+  return { key, url: `https://storage.googleapis.com/${process.env.GCS_BUCKET}/${key}`, metadata };
+}
+
+export async function listFiles(prefix = "") {
+  const [files] = await BUCKET.getFiles({ prefix, autoPaginate: false, maxResults: 100 });
+  return files.map(f => ({ key: f.name, updated: f.metadata?.updated, size: f.metadata?.size }));
+}
+
+export async function deleteFile(key: string) {
+  await BUCKET.file(key).delete();
+  return { deleted: key };
+}

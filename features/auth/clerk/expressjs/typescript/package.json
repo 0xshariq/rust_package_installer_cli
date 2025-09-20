@@ -1,0 +1,11 @@
+{
+    "dependencies": {
+        "@clerk/express": "^1.7.21"
+    },
+    "devDependencies": {
+        "@clerk/types": "^4.78.0",
+        "@types/express": "^4.17.21",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.3.3"
+    }
+}

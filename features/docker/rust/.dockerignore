@@ -1,0 +1,50 @@
+# Rust target directory
+target/
+**/*.rs.bk
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+tmp/
+temp/
+
+# Logs
+*.log
+
+# Environment variables
+.env
+.env.local
+
+# Git
+.git
+.gitignore
+README.md
+
+# Documentation
+docs/
+
+# Tests
+tests/
+benches/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Cargo files that should not be in the image
+Cargo.lock
+
+# Build artifacts
+*.exe
+*.dll
+*.so
+*.dylib

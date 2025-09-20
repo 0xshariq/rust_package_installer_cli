@@ -1,0 +1,26 @@
+// All variables that are used throughout the CSS.
+//
+// This file also overrides Bootstrap variables.
+// For a complete overview of all variables to override, see:
+// * node_modules/bootstrap-sass/assets/stylesheets/bootstrap/_variables.scss
+// * https://github.com/twbs/bootstrap-sass/blob/master/assets/stylesheets/bootstrap/_variables.scss
+
+// mixins
+$image-url-path: '../images/';
+$fonts-url-path: '../fonts/';
+
+// Base settings
+//$font-family-base: "Helvetica Neue", Helvetica, Arial, sans-serif;
+//$font-size-base: 1rem;
+
+// Base colors
+$body-bg: #fff;
+$body-color: #333;
+
+// Breadcrumb
+$breadcrumb-bg: #fff;
+$breadcrumb-padding-x: 0;
+
+// Navbar
+$navbar-padding-x: 1rem;  // for brand
+$navbar-nav-link-padding-x: 0.75rem;

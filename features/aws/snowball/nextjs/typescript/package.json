@@ -1,0 +1,6 @@
+{
+    "dependencies": {
+        "@aws-sdk/client-snowball": "^3.883.0",
+        "@aws-sdk/client-snow-device-management": "^3.883.0"
+    }
+}

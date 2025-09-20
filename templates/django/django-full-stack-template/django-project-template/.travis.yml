@@ -1,0 +1,43 @@
+sudo: required
+dist: xenial
+language: python
+cache: pip
+services:
+- docker
+
+python:
+- '3.6'
+- '3.7'
+
+## TODO: remove this for your own projects.
+install:
+- pip install -U pip wheel setuptools 'Django<2.3'
+- mkdir ../build; django-admin.py startproject -e py,rst,example,gitignore,ini,min -n Dockerfile --template=. myproject ../build
+before_script:
+- export DJANGO_SETTINGS_MODULE=myproject.settings.unittest
+- cd ../build/src
+
+script:
+  # Fast local testing against Travis python
+- pip install -r requirements/unittest.txt
+- py.test --cov
+- coverage run --append --source=myproject,frontend ./manage.py check --fail-level=WARNING --deploy --settings=myproject.settings.docker
+- ./manage.py check --fail-level=WARNING
+  # Build image
+- docker build -t myproject:latest-min -f ../Dockerfile.min ..
+- docker build -t myproject:latest ..
+
+after_success:
+- bash <(curl -s https://codecov.io/bash)
+
+notifications:
+  email:
+    ## TODO: Replace this for your own projects
+    recipients:
+    - travis@edoburu.nl
+    on_success: never
+    on_failure: always
+#  slack:
+#    secure: ....
+#    on_success: never
+#    on_failure: always

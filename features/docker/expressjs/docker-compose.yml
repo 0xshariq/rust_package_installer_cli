@@ -1,0 +1,114 @@
+# Express.js Docker Compose Configuration
+# Created by Package Installer CLI
+
+version: '3.8'
+
+services:
+  express-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      # Database connection
+      # - DATABASE_URL=postgresql://username:password@db:5432/dbname
+      # - MONGODB_URI=mongodb://mongo:27017/dbname
+      # JWT and Auth
+      # - JWT_SECRET=your-super-secret-jwt-key
+      # - JWT_EXPIRES_IN=7d
+      # External APIs
+      # - REDIS_URL=redis://redis:6379
+      # - SMTP_HOST=smtp.gmail.com
+      # - SMTP_PORT=587
+    depends_on:
+      # Uncomment based on your database choice
+      # - db
+      # - mongo
+      # - redis
+    volumes:
+      # Mount for logs
+      - ./logs:/app/logs
+      # Development mode (uncomment for dev)
+      # - .:/app
+      # - /app/node_modules
+    restart: unless-stopped
+    networks:
+      - app-network
+    # Health check
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # PostgreSQL Database (uncomment if needed)
+  # db:
+  #   image: postgres:15-alpine
+  #   environment:
+  #     - POSTGRES_USER=username
+  #     - POSTGRES_PASSWORD=password
+  #     - POSTGRES_DB=dbname
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #     - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+  #   ports:
+  #     - "5432:5432"
+  #   networks:
+  #     - app-network
+  #   restart: unless-stopped
+
+  # MongoDB Database (uncomment if needed)
+  # mongo:
+  #   image: mongo:6-jammy
+  #   environment:
+  #     - MONGO_INITDB_ROOT_USERNAME=username
+  #     - MONGO_INITDB_ROOT_PASSWORD=password
+  #     - MONGO_INITDB_DATABASE=dbname
+  #   volumes:
+  #     - mongo_data:/data/db
+  #     - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+  #   ports:
+  #     - "27017:27017"
+  #   networks:
+  #     - app-network
+  #   restart: unless-stopped
+
+  # Redis Cache (uncomment if needed)
+  # redis:
+  #   image: redis:7-alpine
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   command: redis-server --appendonly yes
+  #   networks:
+  #     - app-network
+  #   restart: unless-stopped
+
+  # Nginx Load Balancer (uncomment for production)
+  # nginx:
+  #   image: nginx:alpine
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf
+  #     - ./ssl:/etc/nginx/ssl
+  #   depends_on:
+  #     - express-app
+  #   networks:
+  #     - app-network
+  #   restart: unless-stopped
+
+volumes:
+  # Uncomment volumes as needed
+  # postgres_data:
+  # mongo_data:
+  # redis_data:
+
+networks:
+  app-network:
+    driver: bridge

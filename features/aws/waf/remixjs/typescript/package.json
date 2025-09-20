@@ -1,0 +1,7 @@
+{
+    "dependencies": {
+        "@aws-sdk/client-waf": "^3.883.0",
+        "@aws-sdk/client-waf-regional": "^3.883.0",
+        "@aws-sdk/client-wafv2": "^3.883.0"
+    }
+}

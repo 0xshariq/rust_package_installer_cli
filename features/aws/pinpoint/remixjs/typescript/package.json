@@ -1,0 +1,7 @@
+{
+    "dependencies": {
+        "@aws-sdk/client-pinpoint": "^3.883.0",
+        "@aws-sdk/client-pinpoint-email": "^3.883.0",
+        "@aws-sdk/client-pinpoint-sms-voice-v2": "^3.883.0"
+    }
+}

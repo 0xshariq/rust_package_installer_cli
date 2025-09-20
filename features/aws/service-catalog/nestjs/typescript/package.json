@@ -1,0 +1,6 @@
+{
+    "dependencies": {
+        "@aws-sdk/client-service-catalog": "^3.883.0",
+        "@aws-sdk/client-service-catalog-appregistry": "^3.883.0"
+    }
+}

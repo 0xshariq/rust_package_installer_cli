@@ -1,0 +1,6 @@
+{
+    "dependencies": {
+        "@aws-sdk/client-mediastore": "^3.883.0",
+        "@aws-sdk/client-mediastore-data": "^3.883.0"
+    }
+}

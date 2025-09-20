@@ -1,0 +1,222 @@
+# ==========================================
+# Angular.js Docker Compose Configuration
+# ==========================================
+# This docker-compose.yml provides a complete development and production
+# environment for Angular applications with optional database services
+
+version: '3.8'
+
+services:
+  # ==========================================
+  # Angular Application Service
+  # ==========================================
+  angular-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: angular-app
+    ports:
+      - "8080:80"  # Map host port 8080 to container port 80
+    environment:
+      - NODE_ENV=production
+      - API_URL=http://backend:3000  # If you have a backend service
+    # volumes:
+    #   - ./src:/app/src  # Enable for development hot-reload
+    networks:
+      - angular-network
+    depends_on:
+      - backend
+      # - database  # Uncomment if using database
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==========================================
+  # Backend API Service (optional)
+  # ==========================================
+  backend:
+    # Option 1: Use existing backend image
+    # image: your-backend-image:latest
+    
+    # Option 2: Build from local Dockerfile
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: angular-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://user:password@postgres:5432/angular_db
+      - JWT_SECRET=your-jwt-secret-change-this
+      - API_PORT=3000
+    networks:
+      - angular-network
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  # ==========================================
+  # Database Services (choose one or multiple)
+  # ==========================================
+  
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: angular-postgres
+    environment:
+      - POSTGRES_DB=angular_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_HOST_AUTH_METHOD=trust  # Remove for production
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql  # Optional initialization
+    ports:
+      - "5432:5432"
+    networks:
+      - angular-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d angular_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MongoDB Database (alternative to PostgreSQL)
+  mongo:
+    image: mongo:6-alpine
+    container_name: angular-mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=angular_db
+    volumes:
+      - mongo_data:/data/db
+      - ./database/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js  # Optional
+    ports:
+      - "27017:27017"
+    networks:
+      - angular-network
+    restart: unless-stopped
+
+  # Redis Cache Service
+  redis:
+    image: redis:7-alpine
+    container_name: angular-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - angular-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass yourredispassword
+
+  # ==========================================
+  # Development Services (uncomment for dev)
+  # ==========================================
+  
+  # Angular Development Server
+  # angular-dev:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.dev  # Create this for development
+  #   container_name: angular-dev
+  #   ports:
+  #     - "4200:4200"
+  #   volumes:
+  #     - .:/app
+  #     - /app/node_modules
+  #   environment:
+  #     - NODE_ENV=development
+  #   command: ng serve --host 0.0.0.0
+  #   networks:
+  #     - angular-network
+
+  # Nginx Reverse Proxy (optional)
+  nginx:
+    image: nginx:alpine
+    container_name: angular-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl  # SSL certificates
+    depends_on:
+      - angular-app
+    networks:
+      - angular-network
+    restart: unless-stopped
+
+# ==========================================
+# Networks
+# ==========================================
+networks:
+  angular-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# ==========================================
+# Persistent Volumes
+# ==========================================
+volumes:
+  postgres_data:
+    driver: local
+  mongo_data:
+    driver: local
+  redis_data:
+    driver: local
+
+# ==========================================
+# Usage Instructions:
+# ==========================================
+# 1. Start all services:
+#    docker-compose up -d
+#
+# 2. Start only specific services:
+#    docker-compose up -d angular-app postgres
+#
+# 3. View logs:
+#    docker-compose logs -f angular-app
+#
+# 4. Stop all services:
+#    docker-compose down
+#
+# 5. Stop and remove volumes:
+#    docker-compose down -v
+#
+# 6. Build and start:
+#    docker-compose up --build -d
+#
+# ==========================================
+# Environment Configuration:
+# ==========================================
+# Create a .env file in the same directory with:
+# NODE_ENV=production
+# DATABASE_URL=postgresql://user:password@postgres:5432/angular_db
+# JWT_SECRET=your-secure-jwt-secret
+# REDIS_PASSWORD=yourredispassword
+# API_PORT=3000
+# ANGULAR_PORT=8080
+#
+# ==========================================
+# Development vs Production:
+# ==========================================
+# For development:
+# - Uncomment the angular-dev service
+# - Use volume mounts for hot reloading
+# - Use docker-compose.override.yml for dev-specific configs
+#
+# For production:
+# - Use built images instead of building locally
+# - Set proper environment variables
+# - Configure SSL certificates
+# - Set up proper logging and monitoring
