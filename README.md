@@ -23,7 +23,7 @@ cargo install package-installer-cli
 After installing, run the CLI as usual:
 
 ```bash
-package-installer-cli [args]
+pi [args]
 ```
 
 This will internally run `node dist/index.js` and pass all arguments to your TypeScript CLI.
