@@ -5,9 +5,9 @@ use std::process::Command;
 use reqwest::blocking::Client;
 use dirs::cache_dir;
 
-const GITHUB_REPO: &str = "0xshariq/package-installer-cli";
+const GITHUB_REPO: &str = "0xshariq/rust_package_installer_cli";
 const CLI_VERSION: &str = "latest"; // You can make this configurable
-const CACHE_DIR_NAME: &str = "package-installer-cli";
+const CACHE_DIR_NAME: &str = ".package-installer-cli";
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -37,10 +37,10 @@ fn main() {
         
         std::process::exit(status.code().unwrap_or(1));
     } else {
-        println!("Usage: package-installer-cli [command] [options]");
+        println!("Usage: pi [command] [options]");
         println!("This is a Rust wrapper for the Package Installer CLI.");
         println!("Use the binary name directly followed by your command to run the CLI.");
-        println!("Example: package-installer-cli create my-app");
+        println!("Example: pi create my-app");
         std::process::exit(1);
     }
 }
@@ -90,7 +90,8 @@ fn download_cli(cache_dir: &Path) -> Result<(), Box<dyn std::error::Error>> {
         return Err(format!("Failed to fetch release info: {}", release_response.status()).into());
     }
     
-    let release_json: serde_json::Value = release_response.json()?;
+    let release_text = release_response.text()?;
+    let release_json: serde_json::Value = serde_json::from_str(&release_text)?;
     
     // Find the tarball URL
     let tarball_url = release_json["tarball_url"]
