@@ -18,13 +18,6 @@ You can also install the CLI via [crates.io](https://crates.io/crates/package-in
 cargo install package-installer-cli
 ```
 
-### Usage
-
-After installing, run the CLI as usual:
-
-```bash
-pi [args]
-```
 
 This will internally run `node dist/index.js` and pass all arguments to your TypeScript CLI.
 
@@ -55,19 +48,6 @@ This will internally run `node dist/index.js` and pass all arguments to your Typ
 - **📈 Usage Tracking**: Comprehensive command and feature usage tracking
 - **⚡ Performance Insights**: Productivity scoring and usage patterns
 
-## 📥 Installation
-
-```bash
-# Using npm
-npm install -g @0xshariq/package-installer
-
-# Using yarn
-yarn global add @0xshariq/package-installer
-
-# Using pnpm (recommended)
-pnpm add -g @0xshariq/package-installer
-```
-
 ## 🎯 Quick Start
 
 ```bash
@@ -88,10 +68,10 @@ pi upgrade-cli
 
 | Document | Description |
 |----------|-------------|
-| [📋 Commands](docs/commands.md) | Complete command reference with examples |
-| [⚡ Features](docs/features.md) | Detailed feature documentation and usage |
-| [🎨 Templates](docs/templates.md) | Available templates and customization options |
-| [🚀 Deployment](docs/deploy.md) | Deployment options and platform integration |
+| [📋 Commands](https://github.com/0xshariq/package-installer-cli/tree/main/docs/commands.md) | Complete command reference with examples |
+| [⚡ Features](https://github.com/0xshariq/package-installer-cli/tree/main/docs/features.md) | Detailed feature documentation and usage |
+| [🎨 Templates](https://github.com/0xshariq/package-installer-cli/tree/main/docs/templates.md) | Available templates and customization options |
+| [🚀 Deployment](https://github.com/0xshariq/package-installer-cli/tree/main/docs/deploy.md) | Deployment options and platform integration |
 
 ## 🛠️ Command Overview
 
@@ -105,7 +85,7 @@ pi upgrade-cli
 | `pi doctor` | Diagnose and fix project issues | `pi doctor` |
 | `pi clean` | Clean development artifacts | `pi clean [--all]` |
 
-*For complete command documentation, see [docs/commands.md](docs/commands.md)*
+*For complete command documentation, see [commands](https://github.com/0xshariq/package-installer-cli/tree/main/docs/commands.md)*
 
 ## 🏗️ Supported Project Types
 
@@ -118,7 +98,7 @@ pi upgrade-cli
 | **Ruby** | Rails, Sinatra | bundler |
 | **PHP** | Laravel, Symfony | composer |
 
-*For detailed template information, see [docs/templates.md](docs/templates.md)*
+*For detailed template information, see [templates](https://github.com/0xshariq/package-installer-cli/tree/main/docs/templates.md)*
 
 ## 🎯 System Requirements
 
@@ -145,7 +125,7 @@ pi doctor
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+We welcome contributions! Please see our [Contributing Guide](https://github.com/0xshariq/package-installer-cli/tree/main/CONTRIBUTING.md) for details.
 
 ## 📄 License
 
@@ -153,9 +133,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔗 Links
 
-- **NPM Package**: [@0xshariq/package-installer](https://www.npmjs.com/package/@0xshariq/package-installer)
-- **GitHub Repository**: [package-installer-cli](https://github.com/0xshariq/package-installer-cli)
-- **Issues & Feedback**: [GitHub Issues](https://github.com/0xshariq/package-installer-cli/issues)
+- **RUST Crate**: [package-installer-cli](https://crates.io/crates/package-installer-cli)
+- **GitHub Repository**: [package-installer-cli](https://github.com/0xshariq/rust_package-installer-cli)
+- **Issues & Feedback**: [GitHub Issues](https://github.com/0xshariq/rust_package-installer-cli/issues)
 
 ---
 
