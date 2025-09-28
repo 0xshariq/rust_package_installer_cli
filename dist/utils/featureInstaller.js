@@ -45,7 +45,7 @@ export { getCliRootPath } from './pathResolver.js';
  * Detect the current project's framework and language with improved logic
  */
 /**
- * Detect if a Next.js project uses src folder structure
+ * Detect if a Next.js project uses src folder structure (Next.js only)
  */
 async function detectNextjsSrcStructure(projectPath) {
     try {
@@ -54,17 +54,17 @@ async function detectNextjsSrcStructure(projectPath) {
         if (!await fs.pathExists(srcPath)) {
             return false;
         }
-        // Check for app directory in src (App Router)
+        // Check for Next.js App Router (app directory in src)
         const srcAppPath = path.join(srcPath, 'app');
         if (await fs.pathExists(srcAppPath)) {
             return true;
         }
-        // Check for pages directory in src (Pages Router)
+        // Check for Next.js Pages Router (pages directory in src) 
         const srcPagesPath = path.join(srcPath, 'pages');
         if (await fs.pathExists(srcPagesPath)) {
             return true;
         }
-        // Check for components directory in src
+        // Check for components directory in src (common pattern)
         const srcComponentsPath = path.join(srcPath, 'components');
         if (await fs.pathExists(srcComponentsPath)) {
             return true;
@@ -76,45 +76,35 @@ async function detectNextjsSrcStructure(projectPath) {
     }
 }
 /**
- * Adjust file path for Next.js src folder structure
+ * Adjust file path for Next.js src folder structure (Next.js only)
+ * Dynamically places files in src/ folder based on their path structure
  */
-function adjustNextjsFilePath(filePath, hasSrcFolder, projectPath) {
-    // Files that should be placed in src folder when src structure is used
-    const srcFolderFiles = [
-        'app/',
-        'pages/',
-        'components/',
-        'lib/',
-        'utils/',
-        'hooks/',
-        'context/',
-        'types/',
-        'styles/' // Only component-specific styles, not global ones
-    ];
-    // Files that should always be in root regardless of src folder
+function adjustNextjsSrcFilePath(filePath, hasSrcFolder, projectPath) {
+    // If project doesn't use src folder, return original path
+    if (!hasSrcFolder) {
+        return path.join(projectPath, filePath);
+    }
+    // Files that should ALWAYS be in root regardless of src folder
     const rootOnlyFiles = [
-        'middleware.ts',
-        'middleware.js',
-        'next.config.js',
-        'next.config.mjs',
         '.env',
         '.env.local',
         '.env.example',
         'package.json',
+        'next.config.js',
+        'next.config.mjs',
         'tailwind.config.js',
         'tailwind.config.ts',
-        'postcss.config.js'
+        'postcss.config.js',
+        'middleware.ts',
+        'middleware.js'
     ];
-    // Check if this file should always be in root
     const fileName = path.basename(filePath);
-    if (rootOnlyFiles.includes(fileName) || filePath.includes('public/')) {
-        return filePath;
+    // Check if this file should always be in root
+    if (rootOnlyFiles.includes(fileName) || filePath.startsWith('public/')) {
+        return path.join(projectPath, filePath);
     }
-    // If project has src folder and this file should be in src
-    if (hasSrcFolder && srcFolderFiles.some(prefix => filePath.startsWith(prefix))) {
-        return path.join('src', filePath);
-    }
-    return filePath;
+    // For all other files, place them in src/ folder if src structure is used
+    return path.join(projectPath, 'src', filePath);
 }
 export async function detectProjectStack(projectPath) {
     try {
@@ -183,7 +173,7 @@ export async function detectProjectStack(projectPath) {
             else if (dependencies['@remix-run/react']) {
                 framework = 'remixjs';
             }
-            // For non-Next.js projects, simple src folder check
+            // For other frameworks, simple src folder check
             if (framework !== 'nextjs' && !hasSrcFolder) {
                 hasSrcFolder = await fs.pathExists(path.join(projectPath, 'src'));
             }
@@ -321,9 +311,9 @@ async function processFeatureFile(filePath, fileConfig, featureName, provider, p
     }
     // Handle file path adjustment based on project structure
     let targetFilePath = path.join(projectPath, filePath);
-    // For Next.js projects, adjust file paths based on src folder structure
-    if (projectInfo.framework === 'nextjs') {
-        targetFilePath = adjustNextjsFilePath(filePath, projectInfo.hasSrcFolder || false, projectPath);
+    // For Next.js projects with src folder structure, adjust file paths accordingly
+    if (projectInfo.framework === 'nextjs' && projectInfo.hasSrcFolder) {
+        targetFilePath = adjustNextjsSrcFilePath(filePath, projectInfo.hasSrcFolder, projectPath);
     }
     // Ensure all parent directories exist before processing
     await fs.ensureDir(path.dirname(targetFilePath));
@@ -385,85 +375,155 @@ async function handleFileCreation(sourceFilePath, targetFilePath, cachedContent)
     console.log(chalk.green(`✅ Created: ${path.relative(process.cwd(), targetFilePath)}`));
 }
 /**
- * Handle file overwrite (replace existing content)
+ * Handle file overwrite (replace existing content or create if doesn't exist)
  */
 async function handleFileOverwrite(sourceFilePath, targetFilePath, cachedContent) {
-    if (cachedContent) {
-        await fs.outputFile(targetFilePath, cachedContent);
+    // Ensure target directory exists
+    await fs.ensureDir(path.dirname(targetFilePath));
+    const fileExists = await fs.pathExists(targetFilePath);
+    try {
+        if (cachedContent) {
+            await fs.outputFile(targetFilePath, cachedContent);
+        }
+        else {
+            // Check if source template exists
+            if (await fs.pathExists(sourceFilePath)) {
+                await copyTemplateFile(sourceFilePath, targetFilePath);
+            }
+            else {
+                console.log(chalk.yellow(`⚠️  Template file not found, skipping: ${path.relative(process.cwd(), sourceFilePath)}`));
+                console.log(chalk.gray(`   This might be due to running a globally installed CLI. Consider using 'npx' or installing locally.`));
+                return;
+            }
+        }
+        if (fileExists) {
+            console.log(chalk.green(`✅ Updated: ${path.relative(process.cwd(), targetFilePath)}`));
+        }
+        else {
+            console.log(chalk.green(`✅ Created: ${path.relative(process.cwd(), targetFilePath)}`));
+        }
     }
-    else {
-        await copyTemplateFile(sourceFilePath, targetFilePath);
+    catch (error) {
+        console.error(chalk.red(`❌ Failed to overwrite/create ${path.relative(process.cwd(), targetFilePath)}: ${error}`));
+        throw error;
     }
-    console.log(chalk.green(`✅ Updated: ${path.relative(process.cwd(), targetFilePath)}`));
 }
 /**
- * Handle file append (add content to end of file)
+ * Handle file append (add content to end of file, create if doesn't exist)
  */
 async function handleFileAppend(sourceFilePath, targetFilePath, cachedContent) {
-    let existingContent = '';
-    if (await fs.pathExists(targetFilePath)) {
-        existingContent = await fs.readFile(targetFilePath, 'utf-8');
-    }
-    let templateContent;
-    if (cachedContent) {
-        templateContent = cachedContent;
-    }
-    else {
-        templateContent = await fs.readFile(sourceFilePath, 'utf-8');
-    }
-    const separator = existingContent && !existingContent.endsWith('\n') ? '\n\n' : '\n';
-    const newContent = existingContent + separator + templateContent;
     // Ensure target directory exists
     await fs.ensureDir(path.dirname(targetFilePath));
-    await fs.outputFile(targetFilePath, newContent);
-    console.log(chalk.green(`✅ Appended to: ${path.relative(process.cwd(), targetFilePath)}`));
+    const fileExists = await fs.pathExists(targetFilePath);
+    let existingContent = '';
+    try {
+        if (fileExists) {
+            existingContent = await fs.readFile(targetFilePath, 'utf8');
+        }
+        let contentToAppend = '';
+        if (cachedContent) {
+            contentToAppend = cachedContent;
+        }
+        else {
+            // Check if source template exists
+            if (await fs.pathExists(sourceFilePath)) {
+                contentToAppend = await fs.readFile(sourceFilePath, 'utf8');
+            }
+            else {
+                console.log(chalk.yellow(`⚠️  Template file not found, skipping append: ${path.relative(process.cwd(), sourceFilePath)}`));
+                console.log(chalk.gray(`   This might be due to running a globally installed CLI. Consider using 'npx' or installing locally.`));
+                return;
+            }
+        }
+        const newContent = existingContent + contentToAppend;
+        await fs.outputFile(targetFilePath, newContent);
+        if (fileExists) {
+            console.log(chalk.green(`✅ Appended to: ${path.relative(process.cwd(), targetFilePath)}`));
+        }
+        else {
+            console.log(chalk.green(`✅ Created with content: ${path.relative(process.cwd(), targetFilePath)}`));
+        }
+    }
+    catch (error) {
+        console.error(chalk.red(`❌ Failed to append/create ${path.relative(process.cwd(), targetFilePath)}: ${error}`));
+        throw error;
+    }
 }
 /**
- * Handle file prepend (add content to beginning of file)
+ * Handle file prepend (add content to beginning of file, create if doesn't exist)
  */
 async function handleFilePrepend(sourceFilePath, targetFilePath, cachedContent) {
-    let existingContent = '';
-    if (await fs.pathExists(targetFilePath)) {
-        existingContent = await fs.readFile(targetFilePath, 'utf-8');
-    }
-    let templateContent;
-    if (cachedContent) {
-        templateContent = cachedContent;
-    }
-    else {
-        templateContent = await fs.readFile(sourceFilePath, 'utf-8');
-    }
-    const separator = templateContent.endsWith('\n') ? '' : '\n';
-    const newContent = templateContent + separator + existingContent;
     // Ensure target directory exists
     await fs.ensureDir(path.dirname(targetFilePath));
-    await fs.outputFile(targetFilePath, newContent);
-    console.log(chalk.green(`✅ Prepended to: ${path.relative(process.cwd(), targetFilePath)}`));
+    const fileExists = await fs.pathExists(targetFilePath);
+    let existingContent = '';
+    try {
+        if (fileExists) {
+            existingContent = await fs.readFile(targetFilePath, 'utf-8');
+        }
+        let templateContent;
+        if (cachedContent) {
+            templateContent = cachedContent;
+        }
+        else {
+            // Check if source template exists
+            if (await fs.pathExists(sourceFilePath)) {
+                templateContent = await fs.readFile(sourceFilePath, 'utf-8');
+            }
+            else {
+                console.log(chalk.yellow(`⚠️  Template file not found, skipping prepend: ${path.relative(process.cwd(), sourceFilePath)}`));
+                console.log(chalk.gray(`   This might be due to running a globally installed CLI. Consider using 'npx' or installing locally.`));
+                return;
+            }
+        }
+        const separator = templateContent.endsWith('\n') ? '' : '\n';
+        const newContent = templateContent + separator + existingContent;
+        await fs.outputFile(targetFilePath, newContent);
+        if (fileExists) {
+            console.log(chalk.green(`✅ Prepended to: ${path.relative(process.cwd(), targetFilePath)}`));
+        }
+        else {
+            console.log(chalk.green(`✅ Created with content: ${path.relative(process.cwd(), targetFilePath)}`));
+        }
+    }
+    catch (error) {
+        console.error(chalk.red(`❌ Failed to prepend/create ${path.relative(process.cwd(), targetFilePath)}: ${error}`));
+        throw error;
+    }
 }
 /**
- * Copy template file to target location with Next.js content processing
+ * Copy template file to target location with framework-agnostic content processing
  */
 async function copyTemplateFile(sourceFilePath, targetFilePath) {
     if (!await fs.pathExists(sourceFilePath)) {
+        const relativePath = path.relative(process.cwd(), sourceFilePath);
+        console.error(chalk.red(`❌ Template file not found: ${relativePath}`));
+        console.error(chalk.yellow(`💡 This might be due to running a globally installed CLI. Consider using 'npx' or installing locally.`));
         throw new Error(`Template file not found: ${sourceFilePath}`);
     }
-    // Ensure target directory exists
-    await fs.ensureDir(path.dirname(targetFilePath));
-    // For Next.js projects, we might need to adjust import paths in template files
-    if (path.extname(sourceFilePath).match(/\.(js|jsx|ts|tsx)$/)) {
-        const templateContent = await fs.readFile(sourceFilePath, 'utf-8');
-        // Process content for Next.js src folder structure
-        let processedContent = templateContent;
-        // Adjust import paths if needed (this is basic - you might want to make it more sophisticated)
-        if (targetFilePath.includes('/src/')) {
-            processedContent = processedContent.replace(/from ['"]@\//g, 'from "@/');
-            processedContent = processedContent.replace(/from ['"]\.\.\//g, 'from "../');
+    try {
+        // Ensure target directory exists
+        await fs.ensureDir(path.dirname(targetFilePath));
+        // For code files, we might need to adjust import paths based on project structure
+        if (path.extname(sourceFilePath).match(/\.(js|jsx|ts|tsx)$/)) {
+            const templateContent = await fs.readFile(sourceFilePath, 'utf-8');
+            // Process content based on project structure (framework-agnostic)
+            let processedContent = templateContent;
+            // Adjust import paths for src-based project structures
+            if (targetFilePath.includes('/src/')) {
+                processedContent = processedContent.replace(/from ['"]@\//g, 'from "@/');
+                processedContent = processedContent.replace(/from ['"]\.\.\//g, 'from "../');
+            }
+            await fs.writeFile(targetFilePath, processedContent);
         }
-        await fs.writeFile(targetFilePath, processedContent);
+        else {
+            // For non-code files, just copy directly
+            await fs.copy(sourceFilePath, targetFilePath);
+        }
     }
-    else {
-        // For non-code files, just copy directly
-        await fs.copy(sourceFilePath, targetFilePath);
+    catch (error) {
+        console.error(chalk.red(`❌ Failed to copy template file: ${error}`));
+        throw error;
     }
 }
 /**

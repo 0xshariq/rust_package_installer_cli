@@ -43,14 +43,13 @@ export function generateTemplateName(framework, options) {
                 parts.push('no-src');
             }
         }
-        // Handle UI library
+        // Handle UI library - only add if actually selected (not "none")
+        // When UI is "none", templates simply omit the UI part from their names
         if (config.ui && config.ui.length > 0) {
             if (options.ui && options.ui !== 'none') {
                 parts.push(options.ui);
             }
-            else {
-                parts.push('no-' + config.ui[0]);
-            }
+            // For "none" selection, don't add any UI part to the template name
         }
         // Handle tailwind option
         if (config.options?.includes('tailwind')) {

@@ -21,7 +21,7 @@ export function getPackageVersion() {
         const packageJsonPath = getPackageJsonPath();
         const packageJsonContent = fs.readFileSync(packageJsonPath, 'utf-8');
         const packageJson = JSON.parse(packageJsonContent);
-        return packageJson.version || '3.2.0';
+        return packageJson.version || '3.4.0';
     }
     catch (error) {
         console.warn('Warning: Could not read version from package.json, using fallback version');

@@ -332,45 +332,12 @@ function extractInstalledPackages(output, language) {
                     });
                 }
                 break;
-            case 'php':
-                // Parse composer output
-                const phpMatches = output.match(/Installing (.+?) \(/gi);
-                if (phpMatches) {
-                    phpMatches.forEach(match => {
-                        const pkg = match.replace(/Installing\s+/, '').replace(/\s+\(.*/, '');
-                        if (pkg)
-                            packages.push(pkg);
-                    });
-                }
-                break;
-            case 'java':
-                // Parse maven output
-                const javaMatches = output.match(/Downloaded from .+?: (.+?) \(/gi);
-                if (javaMatches) {
-                    javaMatches.forEach(match => {
-                        const pkg = match.match(/: (.+?) \(/)?.[1];
-                        if (pkg)
-                            packages.push(pkg);
-                    });
-                }
-                break;
             case 'ruby':
                 // Parse bundler output
                 const rubyMatches = output.match(/Installing (.+?) \(/gi);
                 if (rubyMatches) {
                     rubyMatches.forEach(match => {
                         const pkg = match.replace(/Installing\s+/, '').replace(/\s+\(.*/, '');
-                        if (pkg)
-                            packages.push(pkg);
-                    });
-                }
-                break;
-            case 'dotnet':
-                // Parse dotnet output
-                const dotnetMatches = output.match(/PackageReference for package '(.+?)'/gi);
-                if (dotnetMatches) {
-                    dotnetMatches.forEach(match => {
-                        const pkg = match.match(/'(.+?)'/)?.[1];
                         if (pkg)
                             packages.push(pkg);
                     });
@@ -443,19 +410,8 @@ export async function installPackages(projectPath, language, packages, options =
         case 'go':
             command = `go get ${packages.join(' ')}`;
             break;
-        case 'php':
-            const composerFlags = isDev ? '--dev' : '';
-            command = `composer require ${composerFlags} ${packages.join(' ')}`;
-            break;
-        case 'java':
-            // For Maven, we'd typically need to edit pom.xml, but for simplicity:
-            command = `mvn dependency:get -Dartifact=${packages[0]}`;
-            break;
         case 'ruby':
             command = `bundle add ${packages.join(' ')}`;
-            break;
-        case 'dotnet':
-            command = `dotnet add package ${packages.join(' ')}`;
             break;
         default:
             throw new Error(`Unsupported language: ${language}`);
