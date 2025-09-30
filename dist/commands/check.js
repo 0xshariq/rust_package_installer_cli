@@ -3,11 +3,11 @@ import { promisify } from 'util';
 import chalk from 'chalk';
 import ora from 'ora';
 import boxen from 'boxen';
-import gradient from 'gradient-string';
 import fs from 'fs-extra';
 import path from 'path';
 import semver from 'semver';
 import https from 'https';
+import { createStandardHelp } from '../utils/helpFormatter.js';
 import { getSupportedLanguages, getLanguageConfig } from '../utils/languageConfig.js';
 const execAsync = promisify(exec);
 // Generate PROJECT_TYPES from shared language configuration with enhanced registry support
@@ -18,7 +18,6 @@ const PROJECT_TYPES = getSupportedLanguages().map(lang => {
     let registryUrl;
     let packageInfoUrl;
     switch (lang) {
-        case 'nodejs':
         case 'javascript':
         case 'typescript':
             registryUrl = 'https://registry.npmjs.org';
@@ -48,7 +47,8 @@ const PROJECT_TYPES = getSupportedLanguages().map(lang => {
             const deps = {};
             // Language-specific dependency parsing
             switch (lang) {
-                case 'nodejs':
+                case 'javascript':
+                case 'typescript':
                     if (filename === 'package.json' || filename === 'package-lock.json' || filename === 'pnpm-lock.yml') {
                         return {
                             ...content.dependencies,
@@ -104,14 +104,6 @@ const PROJECT_TYPES = getSupportedLanguages().map(lang => {
                         }
                     }
                     break;
-                case 'php':
-                    if (filename === 'composer.json') {
-                        return {
-                            ...content.require,
-                            ...content['require-dev']
-                        };
-                    }
-                    break;
                 case 'ruby':
                     if (filename === 'Gemfile') {
                         const lines = content.toString().split('\n');
@@ -159,16 +151,13 @@ const PROJECT_TYPES = getSupportedLanguages().map(lang => {
 });
 function getRegistryUrl(lang) {
     switch (lang) {
-        case 'nodejs': return 'https://registry.npmjs.org';
+        case 'javascript':
+        case 'typescript':
+            return 'https://registry.npmjs.org';
         case 'rust': return 'https://crates.io/api/v1/crates';
         case 'python': return 'https://pypi.org/pypi';
         case 'go': return 'https://proxy.golang.org';
         case 'ruby': return 'https://rubygems.org/api/v1/gems';
-        case 'php': return 'https://packagist.org/packages';
-        case 'java': return 'https://repo1.maven.org/maven2';
-        case 'csharp': return 'https://api.nuget.org/v3-flatcontainer';
-        case 'swift': return 'https://packagecatalog.com';
-        case 'dart': return 'https://pub.dev/api/packages';
         default: return '';
     }
 }
@@ -191,7 +180,8 @@ async function fetchPackageFromRegistry(packageName, projectType) {
                     const parsed = JSON.parse(data);
                     // Handle different registry response formats
                     switch (projectType.name) {
-                        case 'Node.js':
+                        case 'JavaScript':
+                        case 'Typescript':
                             resolve(parseNpmRegistryResponse(parsed, packageName));
                             break;
                         case 'Rust':
@@ -293,7 +283,8 @@ function parseGenericResponse(data, packageName) {
 async function getLatestVersion(packageName, projectType) {
     try {
         switch (projectType.name) {
-            case 'Node.js':
+            case 'JavaScript':
+            case 'TypeScript':
                 const { stdout } = await execAsync(`npm view ${packageName} version`);
                 return stdout.trim();
             case 'Rust':
@@ -380,33 +371,43 @@ async function getEnhancedPackageInfo(name, currentVersion, projectType) {
  * Display help for check command
  */
 export function showCheckHelp() {
-    const piGradient = gradient(['#00c6ff', '#0072ff']);
-    const headerGradient = gradient(['#4facfe', '#00f2fe']);
-    console.log('\n' + boxen(headerGradient('🔍 Check Command Help') + '\n\n' +
-        chalk.white('Check package versions in your project and get suggestions for updates.') + '\n' +
-        chalk.white('Helps you keep your dependencies up-to-date and secure.') + '\n\n' +
-        chalk.cyan('Usage:') + '\n' +
-        chalk.white(`  ${piGradient('pi')} ${chalk.hex('#f39c12')('check')} [package-name] [options]`) + '\n\n' +
-        chalk.cyan('Options:') + '\n' +
-        chalk.gray('  -h, --help      Display help for this command') + '\n' +
-        chalk.gray('  -v, --verbose   Show detailed information for all packages') + '\n\n' +
-        chalk.cyan('Examples:') + '\n' +
-        chalk.gray(`  ${piGradient('pi')} ${chalk.hex('#f39c12')('check')}                    # Check all packages in current project`) + '\n' +
-        chalk.gray(`  ${piGradient('pi')} ${chalk.hex('#f39c12')('check')} ${chalk.hex('#feca57')('--verbose')}          # Check all packages with detailed info`) + '\n' +
-        chalk.gray(`  ${piGradient('pi')} ${chalk.hex('#f39c12')('check')} react              # Check specific package version`) + '\n' +
-        chalk.gray(`  ${piGradient('pi')} ${chalk.hex('#f39c12')('check')} @types/node        # Check scoped packages`) + '\n' +
-        chalk.gray(`  ${piGradient('pi')} ${chalk.hex('#f39c12')('check')} ${chalk.hex('#ff6b6b')('--help')}             # Show this help message`) + '\n\n' +
-        chalk.hex('#00d2d3')('💡 Supported Package Managers:') + '\n' +
-        chalk.hex('#95afc0')('  • npm, pnpm, yarn (Node.js)') + '\n' +
-        chalk.hex('#95afc0')('  • pip, pipenv, poetry (Python)') + '\n' +
-        chalk.hex('#95afc0')('  • cargo (Rust)') + '\n' +
-        chalk.hex('#95afc0')('  • go modules (Go)') + '\n' +
-        chalk.hex('#95afc0')('  • composer (PHP)'), {
-        padding: 1,
-        borderStyle: 'round',
-        borderColor: 'cyan',
-        backgroundColor: '#0a0a0a'
-    }));
+    const helpConfig = {
+        commandName: 'Check',
+        emoji: '🔍',
+        description: 'Check package versions in your project and get suggestions for updates.\nHelps you keep your dependencies up-to-date and secure.',
+        usage: [
+            'check [package-name] [options]',
+            'check [options]'
+        ],
+        options: [
+            { flag: '-h, --help', description: 'Display help for this command' },
+            { flag: '-v, --verbose', description: 'Show detailed information for all packages' }
+        ],
+        examples: [
+            { command: 'check', description: 'Check all packages in current project' },
+            { command: 'check --verbose', description: 'Check all packages with detailed info' },
+            { command: 'check react', description: 'Check specific package version' },
+            { command: 'check @types/node', description: 'Check scoped packages' },
+            { command: 'check --help', description: 'Show this help message' }
+        ],
+        additionalSections: [
+            {
+                title: 'Supported Package Managers',
+                items: [
+                    'npm, pnpm, yarn (Node.js)',
+                    'pip, pipenv, poetry (Python)',
+                    'cargo (Rust)',
+                    'go modules (Go)',
+                    'composer (PHP)'
+                ]
+            }
+        ],
+        tips: [
+            'Use --verbose for detailed package information including security vulnerabilities',
+            'Check specific packages by name for targeted updates'
+        ]
+    };
+    createStandardHelp(helpConfig);
 }
 export async function checkCommand(packageName, options) {
     // Check for help flag
@@ -500,61 +501,100 @@ async function checkProjectPackages(verbose = false) {
 }
 async function detectProjectType() {
     console.log(chalk.gray('🔍 Detecting project type...'));
-    for (const projectType of PROJECT_TYPES) {
-        console.log(chalk.gray(`   Checking ${projectType.name}: ${projectType.files.join(', ')}`));
-        for (const file of projectType.files) {
-            // Check in current directory first
-            const filePath = path.join(process.cwd(), file);
-            console.log(chalk.gray(`     Looking for: ${filePath}`));
-            if (await fs.pathExists(filePath)) {
-                console.log(chalk.green(`     ✅ Found: ${file}`));
-                return projectType;
-            }
-            // Then check subdirectories for config files
-            try {
-                const currentDirContents = await fs.readdir(process.cwd());
-                for (const item of currentDirContents) {
-                    const itemPath = path.join(process.cwd(), item);
-                    const stats = await fs.stat(itemPath);
-                    if (stats.isDirectory()) {
-                        const configPath = path.join(itemPath, file);
-                        if (await fs.pathExists(configPath)) {
-                            console.log(chalk.green(`     ✅ Found in subdirectory: ${item}/${file}`));
-                            return projectType;
-                        }
-                    }
-                }
-            }
-            catch (error) {
-                // Ignore directory read errors
+    // Priority order for detection - check most common files first
+    const priorityFiles = ['package.json', 'Cargo.toml', 'requirements.txt', 'composer.json', 'go.mod'];
+    // First pass: check priority files in current directory
+    for (const priorityFile of priorityFiles) {
+        const filePath = path.join(process.cwd(), priorityFile);
+        console.log(chalk.gray(`   Checking priority file: ${filePath}`));
+        if (await fs.pathExists(filePath)) {
+            console.log(chalk.green(`   ✅ Found: ${priorityFile}`));
+            // Find the project type that matches this file
+            const matchingType = PROJECT_TYPES.find(type => type.files.includes(priorityFile));
+            if (matchingType) {
+                console.log(chalk.green(`   📦 Detected: ${matchingType.name}`));
+                return matchingType;
             }
         }
     }
+    // Second pass: check all other files
+    for (const projectType of PROJECT_TYPES) {
+        console.log(chalk.gray(`   Checking ${projectType.name}: ${projectType.files.join(', ')}`));
+        for (const file of projectType.files) {
+            if (priorityFiles.includes(file))
+                continue; // Already checked
+            // Check in current directory first
+            const filePath = path.join(process.cwd(), file);
+            if (await fs.pathExists(filePath)) {
+                console.log(chalk.green(`   ✅ Found: ${file}`));
+                return projectType;
+            }
+        }
+    }
+    // Third pass: check subdirectories
+    try {
+        const currentDirContents = await fs.readdir(process.cwd());
+        for (const item of currentDirContents) {
+            const itemPath = path.join(process.cwd(), item);
+            const stats = await fs.stat(itemPath);
+            if (stats.isDirectory()) {
+                for (const priorityFile of priorityFiles) {
+                    const configPath = path.join(itemPath, priorityFile);
+                    if (await fs.pathExists(configPath)) {
+                        console.log(chalk.green(`   ✅ Found in subdirectory: ${item}/${priorityFile}`));
+                        const matchingType = PROJECT_TYPES.find(type => type.files.includes(priorityFile));
+                        if (matchingType)
+                            return matchingType;
+                    }
+                }
+            }
+        }
+    }
+    catch (error) {
+        console.log(chalk.yellow('   Warning: Could not read directory contents'));
+    }
     console.log(chalk.yellow('   No project type detected'));
-    return PROJECT_TYPES[0]; // Default to Node.js for single package checks
+    return null;
 }
 async function getDependenciesForProject(projectType) {
-    // First check current directory
-    for (const file of projectType.files) {
+    console.log(chalk.gray(`📋 Looking for dependencies in ${projectType.name} project...`));
+    // Priority order for dependency files
+    const priorityFiles = projectType.files.slice().sort((a, b) => {
+        const priority = ['package.json', 'Cargo.toml', 'requirements.txt', 'composer.json', 'go.mod'];
+        return priority.indexOf(a) - priority.indexOf(b);
+    });
+    // First check current directory with priority files
+    for (const file of priorityFiles) {
         const filePath = path.join(process.cwd(), file);
+        console.log(chalk.gray(`   Checking: ${filePath}`));
         if (await fs.pathExists(filePath)) {
+            console.log(chalk.green(`   ✅ Found: ${file}`));
             try {
                 let content;
                 if (file.endsWith('.json')) {
                     content = await fs.readJson(filePath);
+                    console.log(chalk.gray(`   📦 Loaded JSON config from ${file}`));
                 }
                 else if (file.endsWith('.toml')) {
                     // Simple TOML parser for basic cases
                     const tomlContent = await fs.readFile(filePath, 'utf-8');
                     content = parseSimpleToml(tomlContent);
+                    console.log(chalk.gray(`   📦 Loaded TOML config from ${file}`));
                 }
                 else {
                     content = await fs.readFile(filePath, 'utf-8');
+                    console.log(chalk.gray(`   📦 Loaded text config from ${file}`));
                 }
-                return projectType.getDependencies(content, file);
+                const dependencies = projectType.getDependencies(content, file);
+                const depCount = Object.keys(dependencies).length;
+                console.log(chalk.green(`   📊 Found ${depCount} dependencies`));
+                if (depCount > 0) {
+                    console.log(chalk.gray(`   Dependencies: ${Object.keys(dependencies).slice(0, 5).join(', ')}${depCount > 5 ? '...' : ''}`));
+                    return dependencies;
+                }
             }
             catch (error) {
-                console.warn(`⚠️  Could not parse ${file}`);
+                console.warn(chalk.yellow(`   ⚠️  Could not parse ${file}: ${error}`));
             }
         }
     }
@@ -565,9 +605,10 @@ async function getDependenciesForProject(projectType) {
             const itemPath = path.join(process.cwd(), item);
             const stats = await fs.stat(itemPath);
             if (stats.isDirectory()) {
-                for (const file of projectType.files) {
+                for (const file of priorityFiles) {
                     const configPath = path.join(itemPath, file);
                     if (await fs.pathExists(configPath)) {
+                        console.log(chalk.green(`   ✅ Found in subdirectory: ${item}/${file}`));
                         try {
                             let content;
                             if (file.endsWith('.json')) {
@@ -580,10 +621,15 @@ async function getDependenciesForProject(projectType) {
                             else {
                                 content = await fs.readFile(configPath, 'utf-8');
                             }
-                            return projectType.getDependencies(content, file);
+                            const dependencies = projectType.getDependencies(content, file);
+                            const depCount = Object.keys(dependencies).length;
+                            if (depCount > 0) {
+                                console.log(chalk.green(`   📊 Found ${depCount} dependencies in ${configPath}`));
+                                return dependencies;
+                            }
                         }
                         catch (error) {
-                            console.warn(`⚠️  Could not parse ${configPath}`);
+                            console.warn(chalk.yellow(`   ⚠️  Could not parse ${configPath}`));
                         }
                     }
                 }
@@ -591,8 +637,9 @@ async function getDependenciesForProject(projectType) {
         }
     }
     catch (error) {
-        // Ignore directory read errors
+        console.warn(chalk.yellow('   ⚠️  Could not read directory contents'));
     }
+    console.log(chalk.yellow('   📦 No dependencies found'));
     return {};
 }
 function parseSimpleToml(content) {

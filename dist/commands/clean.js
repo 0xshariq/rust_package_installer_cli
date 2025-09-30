@@ -5,37 +5,56 @@ import chalk from 'chalk';
 import ora from 'ora';
 import fs from 'fs-extra';
 import path from 'path';
-import { displaySuccessMessage } from '../utils/dashboard.js';
+import { createStandardHelp } from '../utils/helpFormatter.js';
 /**
  * Display help for clean command
  */
 export function showCleanHelp() {
-    console.clear();
-    console.log(chalk.hex('#9c88ff')('🧹 CLEAN COMMAND HELP\n'));
-    console.log(chalk.hex('#00d2d3')('Usage:'));
-    console.log(chalk.white('  pi clean [options]'));
-    console.log(chalk.white('  pi cleanup [options]') + chalk.gray(' (alias)\n'));
-    console.log(chalk.hex('#00d2d3')('Description:'));
-    console.log(chalk.white('  Clean development artifacts, caches, and temporary files'));
-    console.log(chalk.white('  Safely removes common build outputs and dependency caches\n'));
-    console.log(chalk.hex('#00d2d3')('Options:'));
-    console.log(chalk.white('  --node-modules') + chalk.gray('  Clean node_modules directories'));
-    console.log(chalk.white('  --build') + chalk.gray('        Clean build/dist directories'));
-    console.log(chalk.white('  --cache') + chalk.gray('       Clean package manager caches'));
-    console.log(chalk.white('  --logs') + chalk.gray('        Clean log files'));
-    console.log(chalk.white('  --all') + chalk.gray('         Clean everything (safe)'));
-    console.log(chalk.white('  --deep') + chalk.gray('        Deep clean (includes lock files)'));
-    console.log(chalk.white('  --dry-run') + chalk.gray('     Preview what would be cleaned'));
-    console.log(chalk.white('  -h, --help') + chalk.gray('     Show this help message\n'));
-    console.log(chalk.hex('#00d2d3')('Examples:'));
-    console.log(chalk.gray('  # Clean build directories'));
-    console.log(chalk.white('  pi clean --build\n'));
-    console.log(chalk.gray('  # Clean node_modules'));
-    console.log(chalk.white('  pi clean --node-modules\n'));
-    console.log(chalk.gray('  # Preview clean operation'));
-    console.log(chalk.white('  pi clean --all --dry-run\n'));
-    console.log(chalk.gray('  # Deep clean with lock files'));
-    console.log(chalk.white('  pi clean --deep\n'));
+    const helpConfig = {
+        commandName: 'Clean',
+        emoji: '🧹',
+        description: 'Clean development artifacts, caches, and temporary files.\nSafely removes common build outputs, dependency caches, and temporary files to free up disk space and clean your project.',
+        usage: [
+            'clean [options]',
+            'cleanup [options]   # alias'
+        ],
+        options: [
+            { flag: '--node-modules', description: 'Clean node_modules directories' },
+            { flag: '--build', description: 'Clean build/dist directories' },
+            { flag: '--cache', description: 'Clean package manager caches' },
+            { flag: '--logs', description: 'Clean log files and debug outputs' },
+            { flag: '--all', description: 'Clean everything (safe operation)' },
+            { flag: '--deep', description: 'Deep clean (includes lock files)' },
+            { flag: '--dry-run', description: 'Preview what would be cleaned' },
+            { flag: '-h, --help', description: 'Show this help message' }
+        ],
+        examples: [
+            { command: 'clean --build', description: 'Clean build directories only' },
+            { command: 'clean --node-modules', description: 'Clean node_modules directories' },
+            { command: 'clean --all --dry-run', description: 'Preview what would be cleaned' },
+            { command: 'clean --deep', description: 'Deep clean with lock files' },
+            { command: 'clean --cache', description: 'Clean package manager caches' },
+            { command: 'cleanup --all', description: 'Use alias command' }
+        ],
+        additionalSections: [
+            {
+                title: 'Clean Targets',
+                items: [
+                    'Build Outputs: dist, build, .next, out, target',
+                    'Dependencies: node_modules, .pnpm-store',
+                    'Caches: .cache, .npm, .yarn, __pycache__',
+                    'Logs: *.log, npm-debug.log, yarn-error.log',
+                    'Temp Files: .DS_Store, Thumbs.db, *.tmp'
+                ]
+            }
+        ],
+        tips: [
+            'Always use --dry-run first to preview changes',
+            'Deep clean removes lock files and requires dependency reinstall',
+            'Use --cache to clean package manager caches for more space'
+        ]
+    };
+    createStandardHelp(helpConfig);
 }
 /**
  * Main clean command function
@@ -46,63 +65,62 @@ export async function cleanCommand(options = {}) {
         showCleanHelp();
         return;
     }
-    // Blue gradient banner with "CLEANER" on next line
     console.clear();
-    const banner = `\n${chalk.bgHex('#00c6ff').hex('#fff').bold(' PROJECT ')}${chalk.bgHex('#0072ff').hex('#fff').bold(' CLEAN ')}\n${chalk.bgHex('#00c6ff').hex('#fff').bold(' ER ')}\n`;
-    console.log(banner);
+    console.log(chalk.hex('#ffa502')('🧹 Project Cleaner\n'));
     const projectPath = process.cwd();
-    // Improved flag logic
-    const cleanTargets = [];
-    if (options['all']) {
-        cleanTargets.push('node-modules', 'build', 'cache', 'logs');
-        if (options['deep'])
-            cleanTargets.push('lock-files');
-    }
-    else {
-        if (options['node-modules'])
-            cleanTargets.push('node-modules');
-        if (options['build'])
-            cleanTargets.push('build');
-        if (options['cache'])
-            cleanTargets.push('cache');
-        if (options['logs'])
-            cleanTargets.push('logs');
-        if (options['deep'])
-            cleanTargets.push('lock-files');
-    }
-    if (cleanTargets.length === 0) {
-        console.log(chalk.yellow('No clean targets specified. Use --help for options.'));
+    const isDryRun = options['dryRun'] || options['dry-run'];
+    // Determine what to clean based on flags
+    const targets = determineCleanTargets(options);
+    if (targets.length === 0) {
+        console.log(chalk.yellow('⚠️  No clean targets specified. Use --help for available options.'));
+        console.log(chalk.gray('💡 Tip: Use --all for a safe clean of common artifacts'));
         return;
     }
-    if (options['dry-run']) {
-        console.log(chalk.yellow('🔍 DRY RUN - Showing what would be cleaned:\n'));
+    if (isDryRun) {
+        console.log(chalk.cyan('🔍 DRY RUN - Preview of what would be cleaned:\n'));
     }
-    const spinner = ora(chalk.hex('#9c88ff')('🧹 Cleaning project...')).start();
+    else {
+        console.log(chalk.cyan('🧹 Starting cleanup process...\n'));
+    }
+    const spinner = ora(chalk.hex('#ffa502')(isDryRun ? 'Analyzing files...' : 'Cleaning project...')).start();
     try {
-        let totalCleaned = 0;
+        let totalSize = 0;
         const results = [];
-        for (const target of cleanTargets) {
-            // ...existing code for cleaning each target...
-            // Simulate cleaning for dry-run
-            const size = 1024 * Math.floor(Math.random() * 10 + 1); // Dummy size
-            if (size > 0) {
-                totalCleaned += size;
-                results.push(`${target}: ${size} bytes`);
+        let itemsCleaned = 0;
+        for (const target of targets) {
+            spinner.text = `${isDryRun ? 'Analyzing' : 'Cleaning'} ${target.name}...`;
+            const targetSize = await cleanTarget(projectPath, target, isDryRun);
+            if (targetSize > 0) {
+                totalSize += targetSize;
+                itemsCleaned++;
+                results.push(`${target.name}: ${formatFileSize(targetSize)}`);
             }
         }
         spinner.stop();
-        if (totalCleaned > 0) {
-            displaySuccessMessage(options['dry-run'] ? 'Clean preview completed!' : 'Project cleaned successfully!', [
-                `Total ${options['dry-run'] ? 'would be' : ''} cleaned: ${totalCleaned} bytes`,
-                ...results
-            ]);
+        if (totalSize > 0) {
+            const action = isDryRun ? 'would be cleaned' : 'cleaned';
+            console.log(chalk.green(`\n✅ ${isDryRun ? 'Analysis' : 'Cleanup'} completed!`));
+            console.log(chalk.white(`📊 Total ${action}: ${chalk.bold(formatFileSize(totalSize))}`));
+            console.log(chalk.white(`📁 Items ${action}: ${chalk.bold(itemsCleaned)}`));
+            if (results.length > 0) {
+                console.log(chalk.cyan('\n📋 Breakdown:'));
+                results.forEach(result => {
+                    console.log(chalk.gray(`   • ${result}`));
+                });
+            }
+            if (isDryRun) {
+                console.log(chalk.yellow('\n💡 Run without --dry-run to actually clean these files'));
+            }
+            else {
+                console.log(chalk.green('\n🎉 Project successfully cleaned!'));
+            }
         }
         else {
-            console.log(chalk.yellow('✨ Nothing to clean - project is already tidy!'));
+            console.log(chalk.green('✨ Nothing to clean - project is already tidy!'));
         }
     }
     catch (error) {
-        spinner.fail(chalk.red('❌ Failed to clean project'));
+        spinner.fail(chalk.red(isDryRun ? '❌ Failed to analyze files' : '❌ Failed to clean project'));
         console.error(chalk.red(`Error: ${error instanceof Error ? error.message : String(error)}`));
         process.exit(1);
     }
@@ -112,48 +130,58 @@ export async function cleanCommand(options = {}) {
  */
 function determineCleanTargets(options) {
     const targets = [];
-    if (options.all || options.nodeModules) {
+    // Handle --node-modules flag
+    if (options.all || options['nodeModules'] || options['node-modules']) {
         targets.push({
             name: 'node_modules',
-            patterns: ['**/node_modules'],
+            patterns: ['node_modules', '**/node_modules'],
             description: 'Node.js dependencies'
         });
     }
+    // Handle --build flag
     if (options.all || options.build) {
         targets.push({
             name: 'build outputs',
-            patterns: ['dist', 'build', '.next', 'out', 'target/debug', 'target/release'],
+            patterns: ['dist', 'build', '.next', 'out', 'target/debug', 'target/release', '.output', '.nuxt'],
             description: 'Build outputs and compiled files'
         });
     }
+    // Handle --cache flag
     if (options.all || options.cache) {
         targets.push({
-            name: 'caches',
-            patterns: ['.cache', '.npm', '.yarn', '.pnpm-store', '__pycache__'],
+            name: 'package manager caches',
+            patterns: ['.cache', '.npm', '.yarn', '.pnpm-store', '.pnpm', '__pycache__', '.pytest_cache', 'target/debug/deps', 'target/release/deps'],
             description: 'Package manager and build caches'
         });
     }
+    // Handle --logs flag
     if (options.all || options.logs) {
         targets.push({
-            name: 'logs',
-            patterns: ['*.log', 'logs/**', '.log'],
-            description: 'Log files'
+            name: 'log files',
+            patterns: ['*.log', 'logs', 'log', '*.log.*', 'npm-debug.log*', 'yarn-debug.log*', 'yarn-error.log*'],
+            description: 'Log files and debug outputs'
         });
     }
+    // Handle --deep flag (includes lock files)
     if (options.deep) {
         targets.push({
-            name: 'lock files',
-            patterns: ['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml', 'Cargo.lock'],
+            name: 'dependency lock files',
+            patterns: ['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml', 'Cargo.lock', 'Pipfile.lock', 'poetry.lock'],
             description: 'Dependency lock files (requires reinstall)'
         });
-    }
-    // Default to safe clean if no options specified
-    if (targets.length === 0) {
+        // Add more aggressive cleaning for deep clean
         targets.push({
-            name: 'build outputs',
-            patterns: ['dist', 'build', '.next', 'out'],
-            description: 'Build outputs (safe to clean)'
+            name: 'temporary files',
+            patterns: ['.tmp', 'tmp', '.temp', 'temp', '.DS_Store', 'Thumbs.db', '*.tmp', '*.temp'],
+            description: 'Temporary files and system artifacts'
         });
+    }
+    // If no specific options are provided and not --all, show available options
+    const hasSpecificOption = options['nodeModules'] || options['node-modules'] ||
+        options.build || options.cache || options.logs ||
+        options.deep || options.all;
+    if (!hasSpecificOption) {
+        return []; // Return empty to show help message
     }
     return targets;
 }
@@ -163,21 +191,131 @@ function determineCleanTargets(options) {
 async function cleanTarget(projectPath, target, dryRun) {
     let totalSize = 0;
     for (const pattern of target.patterns) {
-        const fullPath = path.join(projectPath, pattern);
         try {
-            if (await fs.pathExists(fullPath)) {
-                const stat = await fs.stat(fullPath);
-                totalSize += await getDirectorySize(fullPath);
-                if (!dryRun) {
-                    await fs.remove(fullPath);
+            // Handle different pattern types
+            if (pattern.includes('*')) {
+                // Handle glob patterns
+                totalSize += await cleanGlobPattern(projectPath, pattern, dryRun);
+            }
+            else {
+                // Handle direct paths
+                const fullPath = path.join(projectPath, pattern);
+                if (await fs.pathExists(fullPath)) {
+                    const size = await getDirectorySize(fullPath);
+                    totalSize += size;
+                    if (!dryRun && size > 0) {
+                        await fs.remove(fullPath);
+                    }
                 }
             }
         }
         catch (error) {
-            // Ignore permission errors or non-existent paths
+            // Silently ignore permission errors or other filesystem issues
+            // This is expected behavior for clean operations
         }
     }
     return totalSize;
+}
+/**
+ * Clean files matching a glob pattern
+ */
+async function cleanGlobPattern(projectPath, pattern, dryRun) {
+    let totalSize = 0;
+    try {
+        // Import glob dynamically
+        const { glob } = await import('glob');
+        const matches = await glob(pattern, {
+            cwd: projectPath,
+            absolute: false,
+            dot: true,
+            ignore: ['node_modules/node_modules/**'] // Avoid nested node_modules issues
+        });
+        const matchArray = Array.isArray(matches) ? matches : [matches];
+        for (const match of matchArray) {
+            if (!match)
+                continue;
+            const fullPath = path.join(projectPath, match);
+            try {
+                if (await fs.pathExists(fullPath)) {
+                    const size = await getDirectorySize(fullPath);
+                    totalSize += size;
+                    if (!dryRun && size > 0) {
+                        await fs.remove(fullPath);
+                    }
+                }
+            }
+            catch (error) {
+                // Skip files that can't be accessed
+            }
+        }
+    }
+    catch (error) {
+        // Fallback to simple directory walking for pattern matching
+        totalSize += await fallbackPatternMatch(projectPath, pattern, dryRun);
+    }
+    return totalSize;
+}
+/**
+ * Fallback pattern matching when glob is not available
+ */
+async function fallbackPatternMatch(projectPath, pattern, dryRun) {
+    let totalSize = 0;
+    // Handle common patterns manually
+    if (pattern.includes('**')) {
+        // Recursive pattern - search directories
+        const basePattern = pattern.replace('**/', '').replace('*', '');
+        await walkDirectory(projectPath, async (filePath) => {
+            if (filePath.includes(basePattern)) {
+                try {
+                    const size = await getDirectorySize(filePath);
+                    totalSize += size;
+                    if (!dryRun && size > 0) {
+                        await fs.remove(filePath);
+                    }
+                }
+                catch (error) {
+                    // Skip on error
+                }
+            }
+        });
+    }
+    else {
+        // Simple pattern
+        const simplePattern = pattern.replace('*', '');
+        const fullPath = path.join(projectPath, simplePattern);
+        if (await fs.pathExists(fullPath)) {
+            const size = await getDirectorySize(fullPath);
+            totalSize += size;
+            if (!dryRun && size > 0) {
+                await fs.remove(fullPath);
+            }
+        }
+    }
+    return totalSize;
+}
+/**
+ * Walk directory recursively
+ */
+async function walkDirectory(dir, callback) {
+    try {
+        const entries = await fs.readdir(dir, { withFileTypes: true });
+        for (const entry of entries) {
+            const fullPath = path.join(dir, entry.name);
+            if (entry.isDirectory()) {
+                await callback(fullPath);
+                // Recurse into subdirectory (with depth limit to avoid infinite loops)
+                if (!entry.name.startsWith('.') && entry.name !== 'node_modules') {
+                    await walkDirectory(fullPath, callback);
+                }
+            }
+            else {
+                await callback(fullPath);
+            }
+        }
+    }
+    catch (error) {
+        // Skip directories that can't be read
+    }
 }
 /**
  * Get directory size recursively

@@ -7,46 +7,54 @@ import path from 'path';
 import os from 'os';
 import gradientString from 'gradient-string';
 import boxen from 'boxen';
+import { createStandardHelp } from '../utils/helpFormatter.js';
 import { createBanner, displaySystemInfo, displaySuccessMessage } from '../utils/dashboard.js';
 import { HistoryManager } from '../utils/historyManager.js';
 /**
- * Display help for analyze command
+ * Display help for analyze command using standardized format
  */
 export function showAnalyzeHelp() {
-    console.clear();
-    const helpContent = boxen(gradientString(['#667eea', '#764ba2'])('📊 Package Installer CLI Analytics Help') + '\n\n' +
-        chalk.white('Display comprehensive CLI usage analytics and project dashboard') + '\n\n' +
-        chalk.cyan('Usage:') + '\n' +
-        chalk.white('  pi analyze [options]') + '\n' +
-        chalk.white('  pi stats [options]') + chalk.gray(' (alias)') + '\n\n' +
-        chalk.cyan('Description:') + '\n' +
-        chalk.white('  Interactive dashboard showing Package Installer CLI usage statistics,') + '\n' +
-        chalk.white('  project analytics, recent activities, and development environment info.') + '\n\n' +
-        chalk.cyan('Options:') + '\n' +
-        chalk.white('  --export') + chalk.gray('      Export analytics data to JSON file') + '\n' +
-        chalk.white('  --reset') + chalk.gray('       Reset analytics history') + '\n' +
-        chalk.white('  --detailed') + chalk.gray('    Show detailed analytics breakdown') + '\n' +
-        chalk.white('  -h, --help') + chalk.gray('    Show this help message') + '\n\n' +
-        chalk.cyan('Features:') + '\n' +
-        chalk.green('  📈 Command Usage Stats') + chalk.gray('   Frequency and trends of CLI commands') + '\n' +
-        chalk.green('  🚀 Project Analytics') + chalk.gray('    Created projects and framework breakdown') + '\n' +
-        chalk.green('  📁 Recent Activity') + chalk.gray('      Last created/modified projects timeline') + '\n' +
-        chalk.green('  🎯 Feature Usage') + chalk.gray('      Most used features and integrations') + '\n' +
-        chalk.green('  ⚙️  Environment Info') + chalk.gray('     Development environment overview') + '\n' +
-        chalk.green('  📊 Performance') + chalk.gray('        CLI performance metrics and insights') + '\n\n' +
-        chalk.cyan('Examples:') + '\n' +
-        chalk.white('  pi analyze') + chalk.gray('             Show complete analytics dashboard') + '\n' +
-        chalk.white('  pi analyze --detailed') + chalk.gray('   Show detailed breakdown with more metrics') + '\n' +
-        chalk.white('  pi analyze --export') + chalk.gray('    Export analytics data to JSON file') + '\n' +
-        chalk.white('  pi analyze --reset') + chalk.gray('     Clear all analytics history') + '\n\n' +
-        chalk.yellow('💡 Tip: Analytics data is collected from ~/.package-installer-cli/history.json'), {
-        padding: 1,
-        margin: { top: 1, bottom: 1, left: 2, right: 2 },
-        borderStyle: 'round',
-        borderColor: 'magenta',
-        backgroundColor: '#000000'
-    });
-    console.log(helpContent);
+    const helpConfig = {
+        commandName: 'Analyze',
+        emoji: '📊',
+        description: 'Display comprehensive CLI usage analytics and project dashboard.\nInteractive dashboard showing Package Installer CLI usage statistics, project analytics, recent activities, and development environment info.',
+        usage: [
+            'analyze [options]',
+            'stats [options]   # alias'
+        ],
+        options: [
+            { flag: '--export', description: 'Export analytics data to JSON file' },
+            { flag: '--reset', description: 'Reset analytics history' },
+            { flag: '--detailed', description: 'Show detailed analytics breakdown' },
+            { flag: '-h, --help', description: 'Show this help message' }
+        ],
+        examples: [
+            { command: 'analyze', description: 'Show complete analytics dashboard' },
+            { command: 'analyze --detailed', description: 'Show detailed breakdown with more metrics' },
+            { command: 'analyze --export', description: 'Export analytics data to JSON file' },
+            { command: 'analyze --reset', description: 'Clear all analytics history' },
+            { command: 'stats', description: 'Use alias command' }
+        ],
+        additionalSections: [
+            {
+                title: 'Features',
+                items: [
+                    '📈 Command Usage Stats - Frequency and trends of CLI commands',
+                    '🚀 Project Analytics - Created projects and framework breakdown',
+                    '📁 Recent Activity - Last created/modified projects timeline',
+                    '🎯 Feature Usage - Most used features and integrations',
+                    '⚙️ Environment Info - Development environment overview',
+                    '📊 Performance - CLI performance metrics and insights'
+                ]
+            }
+        ],
+        tips: [
+            'Analytics data is collected from ~/.package-installer-cli/history.json',
+            'Use --export to backup your analytics data',
+            'Use --reset to start fresh analytics tracking'
+        ]
+    };
+    createStandardHelp(helpConfig);
 }
 /**
  * Main analyze command function

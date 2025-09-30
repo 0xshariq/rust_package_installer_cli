@@ -25,7 +25,7 @@ export function getCliRootPath() {
         if (fs.existsSync(packageJsonPath)) {
             try {
                 const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
-                if (packageNames.includes(packageJson.name)) {
+                if (packageNames.includes(packageJson.name) && fs.existsSync(path.join(currentDir, 'features'))) {
                     return currentDir;
                 }
             }
@@ -49,77 +49,51 @@ export function getCliRootPath() {
             // Continue to other methods
         }
     }
-    // Method 3: Try to resolve using require.resolve for npm installations
+    // Method 3: Check current working directory (in case the CLI is run from the project root)
+    const cwdPath = process.cwd();
+    const workspacePackage = path.join(cwdPath, 'package.json');
+    if (fs.existsSync(workspacePackage) && fs.existsSync(path.join(cwdPath, 'features'))) {
+        try {
+            const packageJson = JSON.parse(fs.readFileSync(workspacePackage, 'utf-8'));
+            if (packageNames.includes(packageJson.name)) {
+                return cwdPath;
+            }
+        }
+        catch (error) {
+            // Continue to other methods
+        }
+    }
+    // Method 4: Try to resolve using require.resolve for npm installations
     for (const packageName of packageNames) {
         try {
             const packageMainPath = require.resolve(`${packageName}/package.json`);
-            return path.dirname(packageMainPath);
+            const resolvedRoot = path.dirname(packageMainPath);
+            if (fs.existsSync(path.join(resolvedRoot, 'features'))) {
+                return resolvedRoot;
+            }
         }
         catch (error) {
             // Package not found in require cache, try next
         }
     }
-    // Method 4: Check common global installation paths for all package managers
+    // Method 5: Check common global installation paths for all package managers
     const globalPaths = [];
+    const homeDir = process.env.HOME || process.env.USERPROFILE || '';
     // npm global paths
     globalPaths.push(
     // Linux/macOS npm global paths
     '/usr/local/lib/node_modules/@0xshariq/package-installer', '/usr/lib/node_modules/@0xshariq/package-installer', 
     // User-specific npm global paths
-    path.join(process.env.HOME || '', '.npm-global/lib/node_modules/@0xshariq/package-installer'), path.join(process.env.HOME || '', '.npm/lib/node_modules/@0xshariq/package-installer'), 
+    path.join(homeDir, '.npm-global/lib/node_modules/@0xshariq/package-installer'), path.join(homeDir, '.npm/lib/node_modules/@0xshariq/package-installer'), 
     // Windows npm global paths
     path.join(process.env.APPDATA || '', 'npm/node_modules/@0xshariq/package-installer'), path.join(process.env.ProgramFiles || '', 'nodejs/node_modules/@0xshariq/package-installer'));
-    // PyPI/pip global paths
-    if (process.env.HOME) {
-        globalPaths.push(
-        // Linux/macOS pip user install paths
-        path.join(process.env.HOME, '.local/lib/python*/site-packages/package-installer-cli'), path.join(process.env.HOME, '.local/bin/package-installer-cli'), 
-        // System-wide pip install paths
-        '/usr/local/lib/python*/site-packages/package-installer-cli', '/usr/lib/python*/site-packages/package-installer-cli');
-    }
-    // RubyGems global paths
-    if (process.env.HOME) {
-        globalPaths.push(
-        // User gem installation paths
-        path.join(process.env.HOME, '.gem/ruby/*/gems/package-installer-cli-*'), path.join(process.env.HOME, '.local/share/gem/ruby/*/gems/package-installer-cli-*'), 
-        // System gem installation paths
-        '/usr/local/lib/ruby/gems/*/gems/package-installer-cli-*', '/var/lib/gems/*/gems/package-installer-cli-*');
-    }
-    // Rust cargo global paths
-    if (process.env.HOME) {
-        globalPaths.push(path.join(process.env.HOME, '.cargo/bin/package-installer-cli'), path.join(process.env.HOME, '.cargo/registry/src/*/package-installer-cli-*'));
-    }
-    // Go global paths
-    const goPath = process.env.GOPATH || path.join(process.env.HOME || '', 'go');
-    globalPaths.push(path.join(goPath, 'bin/go_package_installer_cli'), path.join(goPath, 'bin/pi'), // In case the binary is named 'pi'
-    path.join(goPath, 'pkg/mod/github.com/0xshariq/go_package_installer_cli*'), 
-    // Also check system-wide go installation paths
-    '/usr/local/bin/go_package_installer_cli', '/usr/local/bin/pi');
-    // Check all possible global paths
+    // Check all global paths
     for (const globalPath of globalPaths) {
-        // Handle wildcard paths
-        if (globalPath.includes('*')) {
-            try {
-                const { execSync } = require('child_process');
-                const expandedPaths = execSync(`ls -d ${globalPath} 2>/dev/null || true`, { encoding: 'utf8' }).trim().split('\n').filter((p) => p);
-                for (const expandedPath of expandedPaths) {
-                    if (fs.existsSync(expandedPath) && (fs.existsSync(path.join(expandedPath, 'features')) ||
-                        fs.existsSync(path.join(path.dirname(expandedPath), 'features')))) {
-                        return fs.existsSync(path.join(expandedPath, 'features')) ? expandedPath : path.dirname(expandedPath);
-                    }
-                }
-            }
-            catch (error) {
-                // Continue to next path
-            }
-        }
-        else {
-            if (fs.existsSync(globalPath) && fs.existsSync(path.join(globalPath, 'features'))) {
-                return globalPath;
-            }
+        if (fs.existsSync(globalPath) && fs.existsSync(path.join(globalPath, 'features'))) {
+            return globalPath;
         }
     }
-    // Method 5: Check if npm prefix is available and use it (for npm installations)
+    // Method 6: Check if npm prefix is available and use it (for npm installations)
     try {
         const { execSync } = require('child_process');
         const npmPrefix = execSync('npm config get prefix', { encoding: 'utf8' }).trim();
@@ -131,26 +105,14 @@ export function getCliRootPath() {
     catch (error) {
         // npm not available or command failed
     }
-    // Method 6: Check binary location and work backwards (for compiled languages like Go/Rust)
-    try {
-        const { execSync } = require('child_process');
-        const whichResult = execSync('which pi || which package-installer-cli || which go_package_installer_cli || echo ""', { encoding: 'utf8' }).trim();
-        if (whichResult) {
-            // Go up from binary location to find the package root
-            let binaryDir = path.dirname(whichResult);
-            while (binaryDir !== path.dirname(binaryDir)) {
-                if (fs.existsSync(path.join(binaryDir, 'features'))) {
-                    return binaryDir;
-                }
-                binaryDir = path.dirname(binaryDir);
-            }
-        }
+    // Method 7: Check relative to script location as last resort
+    const scriptRelativePath = path.resolve(__dirname, '../../');
+    if (fs.existsSync(path.join(scriptRelativePath, 'features'))) {
+        return scriptRelativePath;
     }
-    catch (error) {
-        // which command failed or not available
-    }
-    // Final fallback: use the local development path
-    console.warn('⚠️  Could not resolve CLI root path, using fallback');
+    // Final fallback: use the local development path but warn user
+    console.warn('⚠️  Could not resolve CLI root path, using fallback. Some features may not work correctly.');
+    console.warn('💡 Try running with npx for better compatibility: npx @0xshariq/package-installer');
     return path.resolve(__dirname, '..', '..');
 }
 /**

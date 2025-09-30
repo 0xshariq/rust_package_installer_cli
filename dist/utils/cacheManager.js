@@ -1,77 +1,50 @@
 /**
  * Cache Manager - Centralized caching operations for Package Installer CLI
+ * Simplified version focusing on essential caching functionality only
  */
 import { cacheManager as cacheManagerInstance } from './cacheUtils.js';
 import fs from 'fs-extra';
 import path from 'path';
-import chalk from 'chalk';
 // Export the cache manager instance
 export const cacheManager = cacheManagerInstance;
 /**
  * Initialize cache system on CLI startup
  */
 export async function initializeCache() {
-    await cacheManagerInstance.init();
-}
-/**
- * Get cached project
- */
-export async function getCachedProject(projectPath) {
     try {
-        const cache = cacheManagerInstance.getCache();
-        const cached = cache.projects.find((p) => p.path === projectPath);
-        return cached || null;
+        await cacheManagerInstance.init();
     }
     catch (error) {
-        return null;
+        // Silent fail - cache will work in memory mode
     }
 }
 /**
- * Cache project data (simplified)
- */
-export async function cacheProjectData(projectPath, name, language, framework, dependencies, size) {
-    try {
-        // For now, just cache basic project info without complex dependencies
-        console.log(chalk.gray(`📊 Caching project data for ${name}`));
-    }
-    catch (error) {
-        console.warn('Failed to cache project data:', error);
-    }
-}
-/**
- * Get cached template files (simplified)
+ * Get cached template files (simplified - returns null for now)
  */
 export async function getCachedTemplateFiles(templateName) {
-    try {
-        const cache = cacheManagerInstance.getCache();
-        const template = cache.templateFiles.find((t) => t.templateName === templateName);
-        return template || null;
-    }
-    catch (error) {
-        return null;
-    }
+    // Simplified implementation - just return null for now
+    return null;
 }
 /**
- * Cache template files (simplified)
+ * Cache template files (simplified - no-op for now)
  */
-export async function cacheTemplateFiles(templateName, templatePath, files, size) {
-    try {
-        console.log(chalk.gray(`📊 Caching template files for ${templateName}`));
-    }
-    catch (error) {
-        console.warn('Failed to cache template files:', error);
-    }
+export async function cacheTemplateFiles(templateName, templatePath, files) {
+    // Simplified implementation - no-op for now
+    // This reduces complexity and memory usage
 }
 /**
- * Update template usage statistics (simplified)
+ * Update template usage statistics (simplified - no-op for now)
  */
-export async function updateTemplateUsage(templateName, framework, language, features) {
-    try {
-        console.log(chalk.gray(`📊 Recording template usage: ${templateName}`));
-    }
-    catch (error) {
-        console.warn('Failed to update template usage:', error);
-    }
+export async function updateTemplateUsage(templateName, framework, language) {
+    // Simplified implementation - no-op for now
+    // This reduces complexity and memory usage
+}
+/**
+ * Cache project data (simplified - no-op for now)
+ */
+export async function cacheProjectData(projectPath, name, type) {
+    // Simplified implementation - no-op for now
+    // This reduces complexity and memory usage
 }
 /**
  * Get directory size utility function
@@ -80,17 +53,23 @@ export async function getDirectorySize(dirPath) {
     try {
         let totalSize = 0;
         async function calculateSize(currentPath) {
-            const stats = await fs.stat(currentPath);
-            if (stats.isFile()) {
-                totalSize += stats.size;
-            }
-            else if (stats.isDirectory()) {
-                const items = await fs.readdir(currentPath);
-                for (const item of items) {
-                    if (!['node_modules', '.git', 'dist', 'build'].includes(item)) {
-                        await calculateSize(path.join(currentPath, item));
+            try {
+                const stats = await fs.stat(currentPath);
+                if (stats.isFile()) {
+                    totalSize += stats.size;
+                }
+                else if (stats.isDirectory()) {
+                    const items = await fs.readdir(currentPath);
+                    for (const item of items) {
+                        // Skip large directories to avoid performance issues
+                        if (!['node_modules', '.git', 'dist', 'build', 'target', '.cache'].includes(item)) {
+                            await calculateSize(path.join(currentPath, item));
+                        }
                     }
                 }
+            }
+            catch (error) {
+                // Skip files/directories that can't be accessed
             }
         }
         await calculateSize(dirPath);
@@ -101,98 +80,52 @@ export async function getDirectorySize(dirPath) {
     }
 }
 /**
- * Read template files for caching
- */
-export async function readTemplateFiles(templatePath) {
-    const files = {};
-    async function readFiles(currentPath, relativePath = '') {
-        try {
-            const items = await fs.readdir(currentPath, { withFileTypes: true });
-            for (const item of items) {
-                const fullPath = path.join(currentPath, item.name);
-                const relativeItemPath = path.join(relativePath, item.name);
-                if (item.isFile()) {
-                    // Skip binary files and large files
-                    const stats = await fs.stat(fullPath);
-                    if (stats.size < 1024 * 1024) { // Skip files larger than 1MB
-                        const content = await fs.readFile(fullPath, 'utf-8').catch(() => null);
-                        if (content !== null) {
-                            files[relativeItemPath] = content;
-                        }
-                    }
-                }
-                else if (item.isDirectory() && !['node_modules', '.git', 'dist', 'build'].includes(item.name)) {
-                    await readFiles(fullPath, relativeItemPath);
-                }
-            }
-        }
-        catch (error) {
-            // Skip directories that can't be read
-        }
-    }
-    await readFiles(templatePath);
-    return files;
-}
-/**
- * Create project from cached template
- */
-export async function createProjectFromCachedTemplate(projectName, cachedTemplate) {
-    const projectPath = path.resolve(process.cwd(), projectName);
-    // Create project directory
-    await fs.ensureDir(projectPath);
-    // Write cached files
-    if (cachedTemplate.files) {
-        for (const [filePath, content] of Object.entries(cachedTemplate.files)) {
-            const fullPath = path.join(projectPath, filePath);
-            await fs.ensureDir(path.dirname(fullPath));
-            await fs.writeFile(fullPath, content);
-        }
-    }
-    return projectPath;
-}
-/**
- * Get cache statistics
+ * Get cache statistics (simplified)
  */
 export function getCacheStats() {
     try {
-        return cacheManagerInstance.getAdvancedStats();
+        const cache = cacheManagerInstance.getCache();
+        return {
+            projects: cache.projects || [],
+            templates: cache.templates || [],
+            templateFiles: cache.templateFiles || [],
+            features: cache.features || [],
+            hits: 0,
+            misses: 0
+        };
     }
     catch (error) {
         return {
-            cache: { hitRate: '0%', size: 0 },
-            health: { status: 'Unknown' },
-            performance: {}
+            projects: [],
+            templates: [],
+            templateFiles: [],
+            features: [],
+            hits: 0,
+            misses: 0
         };
     }
 }
 /**
- * Get cache status
+ * Get cache status (simplified)
  */
 export function getCacheStatus() {
     try {
-        const stats = getCacheStats();
         const cache = cacheManagerInstance.getCache();
         return {
-            isHealthy: stats.health?.status === 'Healthy',
-            hitRate: 0,
+            initialized: true,
+            version: cache.version || '1.0.0',
             totalProjects: cache.projects?.length || 0,
             totalTemplates: cache.templates?.length || 0,
-            totalFeatures: cache.features?.length || 0,
-            recentProjects: [],
-            performance: stats.performance || {},
-            size: stats.cache?.size || 0
+            totalFeatures: cache.features?.length || 0
         };
     }
     catch (error) {
         return {
-            isHealthy: false,
-            hitRate: 0,
+            initialized: false,
+            version: '1.0.0',
             totalProjects: 0,
             totalTemplates: 0,
-            totalFeatures: 0,
-            recentProjects: [],
-            performance: {},
-            size: 0
+            totalFeatures: 0
         };
     }
 }

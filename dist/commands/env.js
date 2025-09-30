@@ -9,6 +9,7 @@ import path from 'path';
 import boxen from 'boxen';
 import gradient from 'gradient-string';
 import inquirer from 'inquirer';
+import { createStandardHelp } from '../utils/helpFormatter.js';
 import { displaySuccessMessage, displayErrorMessage } from '../utils/dashboard.js';
 import { detectProjectStack } from '../utils/featureInstaller.js';
 /**
@@ -208,37 +209,49 @@ async function validateEnvFile(projectPath) {
  * Display help for environment command
  */
 export function showEnvironmentHelp() {
-    console.clear();
-    const helpContent = boxen(gradient(['#ff6b6b', '#feca57'])('🌍 Environment Command Help') + '\n\n' +
-        chalk.white('Analyze and manage your development environment') + '\n\n' +
-        chalk.cyan('Usage:') + '\n' +
-        chalk.white('  pi env [options]') + '\n' +
-        chalk.white('  pi environment [options]') + chalk.gray(' (alias)') + '\n\n' +
-        chalk.cyan('Description:') + '\n' +
-        chalk.white('  Comprehensive environment analysis and management tools') + '\n' +
-        chalk.white('  for development setup and configuration') + '\n\n' +
-        chalk.cyan('Options:') + '\n' +
-        chalk.white('  --check') + chalk.gray('        Check development tools and versions') + '\n' +
-        chalk.white('  --generate') + chalk.gray('     Generate .env template for project') + '\n' +
-        chalk.white('  --validate') + chalk.gray('     Validate existing .env file') + '\n' +
-        chalk.white('  --export') + chalk.gray('      Export environment info to file') + '\n' +
-        chalk.white('  --system') + chalk.gray('      Show system information only') + '\n' +
-        chalk.white('  -h, --help') + chalk.gray('     Show this help message') + '\n\n' +
-        chalk.cyan('Examples:') + '\n' +
-        chalk.gray('  # Interactive environment analysis') + '\n' +
-        chalk.white('  pi env') + '\n\n' +
-        chalk.gray('  # Check development tools') + '\n' +
-        chalk.white('  pi env --check') + '\n\n' +
-        chalk.gray('  # Generate .env template') + '\n' +
-        chalk.white('  pi env --generate') + '\n\n' +
-        chalk.gray('  # Validate .env file') + '\n' +
-        chalk.white('  pi env --validate'), {
-        padding: 1,
-        margin: 1,
-        borderStyle: 'round',
-        borderColor: 'yellow'
-    });
-    console.log(helpContent);
+    const helpConfig = {
+        commandName: 'Environment',
+        emoji: '🌍',
+        description: 'Analyze and manage your development environment.\nComprehensive environment analysis and management tools for development setup and configuration.',
+        usage: [
+            'env [options]',
+            'environment [options]   # alias'
+        ],
+        options: [
+            { flag: '--check', description: 'Check development tools and versions' },
+            { flag: '--generate', description: 'Generate .env template for project' },
+            { flag: '--validate', description: 'Validate existing .env file' },
+            { flag: '--export', description: 'Export environment info to file' },
+            { flag: '--system', description: 'Show system information only' },
+            { flag: '-h, --help', description: 'Show this help message' }
+        ],
+        examples: [
+            { command: 'env', description: 'Interactive environment analysis' },
+            { command: 'env --check', description: 'Check development tools' },
+            { command: 'env --generate', description: 'Generate .env template' },
+            { command: 'env --validate', description: 'Validate .env file' },
+            { command: 'env --system', description: 'Show system information only' },
+            { command: 'environment --export', description: 'Export environment info to file' }
+        ],
+        additionalSections: [
+            {
+                title: 'Features',
+                items: [
+                    'Development tools version checking',
+                    'Environment file generation and validation',
+                    'System information analysis',
+                    'Configuration management',
+                    'Project environment setup'
+                ]
+            }
+        ],
+        tips: [
+            'Use --generate to create .env templates for your projects',
+            'Regular environment checks help maintain development consistency',
+            'Validate .env files to catch configuration issues early'
+        ]
+    };
+    createStandardHelp(helpConfig);
 }
 /**
  * Main environment command function

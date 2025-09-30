@@ -2,41 +2,49 @@
  * Upgrade CLI command - Updates Package Installer CLI to the latest version
  */
 import chalk from 'chalk';
-import gradient from 'gradient-string';
 import boxen from 'boxen';
 import ora from 'ora';
 import inquirer from 'inquirer';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import semver from 'semver';
+import { createStandardHelp } from '../utils/helpFormatter.js';
 const execAsync = promisify(exec);
 /**
  * Display help for upgrade-cli command
  */
 export function showUpgradeHelp() {
-    const piGradient = gradient(['#00c6ff', '#0072ff']);
-    const headerGradient = gradient(['#4facfe', '#00f2fe']);
-    console.log('\n' + boxen(headerGradient('🚀 Package Installer CLI - Upgrade Command Help') + '\n\n' +
-        chalk.white('Update Package Installer CLI to the latest version with intelligent upgrade management.') + '\n' +
-        chalk.white('Includes breaking change detection and version compatibility checks!') + '\n\n' +
-        chalk.cyan('Usage:') + '\n' +
-        chalk.white(`  ${piGradient('pi')} ${chalk.hex('#10ac84')('upgrade-cli')}`) + '\n\n' +
-        chalk.cyan('Options:') + '\n' +
-        chalk.gray('  -h, --help    Display help for this command') + '\n\n' +
-        chalk.cyan('Examples:') + '\n' +
-        chalk.gray(`  ${piGradient('pi')} ${chalk.hex('#10ac84')('upgrade-cli')}              # Smart upgrade with breaking change detection`) + '\n' +
-        chalk.gray(`  ${piGradient('pi')} ${chalk.hex('#10ac84')('upgrade-cli')} ${chalk.hex('#ff6b6b')('--help')}     # Show this help message`) + '\n\n' +
-        chalk.hex('#00d2d3')('💡 Enhanced Features:') + '\n' +
-        chalk.hex('#95afc0')('  • Semantic version analysis and breaking change detection') + '\n' +
-        chalk.hex('#95afc0')('  • Interactive confirmation for major version upgrades') + '\n' +
-        chalk.hex('#95afc0')('  • Automatic @latest tag installation for maximum compatibility') + '\n' +
-        chalk.hex('#95afc0')('  • Package size and release date information') + '\n' +
-        chalk.hex('#95afc0')('  • Comprehensive upgrade verification and rollback guidance'), {
-        padding: 1,
-        borderStyle: 'round',
-        borderColor: 'cyan',
-        backgroundColor: '#0a0a0a'
-    }));
+    const helpConfig = {
+        commandName: 'upgrade-cli',
+        emoji: '🚀',
+        description: 'Update Package Installer CLI to the latest version with intelligent upgrade management.\nIncludes breaking change detection and version compatibility checks!',
+        usage: ['pi upgrade-cli'],
+        options: [
+            { flag: '-h, --help', description: 'Display help for this command' }
+        ],
+        examples: [
+            { command: 'pi upgrade-cli', description: 'Smart upgrade with breaking change detection' },
+            { command: 'pi upgrade-cli --help', description: 'Show this help message' }
+        ],
+        additionalSections: [
+            {
+                title: '💡 Enhanced Features',
+                items: [
+                    '• Semantic version analysis and breaking change detection',
+                    '• Interactive confirmation for major version upgrades',
+                    '• Automatic @latest tag installation for maximum compatibility',
+                    '• Package size and release date information',
+                    '• Comprehensive upgrade verification and rollback guidance'
+                ]
+            }
+        ],
+        tips: [
+            'CLI will prompt for confirmation on major version upgrades',
+            'Breaking changes are automatically detected and explained',
+            'Use npm install -g package-installer-cli@<version> to rollback'
+        ]
+    };
+    createStandardHelp(helpConfig);
 }
 /**
  * Get current CLI version

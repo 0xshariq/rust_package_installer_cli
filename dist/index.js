@@ -14,7 +14,7 @@ import { addCommand, showAddHelp } from './commands/add.js';
 import { showUpgradeHelp, upgradeCliCommand } from './commands/upgrade-cli.js';
 import { updateCommand, showUpdateHelp } from './commands/update.js';
 import { analyzeCommand, showAnalyzeHelp } from './commands/analyze.js';
-import { deployCommand } from './commands/deploy.js';
+import { deployCommand, showDeployHelp } from './commands/deploy.js';
 import { cleanCommand, showCleanHelp } from './commands/clean.js';
 import { environmentCommand, showEnvironmentHelp } from './commands/env.js';
 import { doctorCommand, showDoctorHelp } from './commands/doctor.js';
@@ -93,12 +93,18 @@ program
     .command('check')
     .description(chalk.hex('#f39c12')('🔍 ') + chalk.hex('#ffa500')('Check package versions and get update suggestions'))
     .argument('[package-name]', chalk.hex('#95afc0')('Specific package to check (optional)'))
+    .option('-v, --verbose', 'Show detailed information for all packages')
+    .option('-h, --help', 'Display help for this command')
     .on('--help', () => {
     showCheckHelp();
 })
-    .action(async (packageName) => {
+    .action(async (packageName, options) => {
     try {
-        await checkCommand(packageName);
+        if (options.help) {
+            showCheckHelp();
+            return;
+        }
+        await checkCommand(packageName, options);
     }
     catch (error) {
         handleCommandError('check packages', error);
@@ -110,10 +116,21 @@ program
     .description(chalk.hex('#00d2d3')('📥 ') + chalk.hex('#00cec9')('Clone repositories from GitHub, GitLab, BitBucket & SourceHut'))
     .argument('[user/repo]', chalk.hex('#95afc0')('Repository in format "user/repo" or "provider:user/repo"'))
     .argument('[project-name]', chalk.hex('#95afc0')('Custom project name (defaults to repo name)'))
+    .option('-h, --help', 'Display help for this command')
+    .option('--offline', 'Use cached templates if available')
+    .option('--no-deps', 'Skip dependency installation')
+    .option('--no-git', 'Skip git initialization')
+    .option('--shallow', 'Create shallow clone (faster)')
+    .option('--branch <name>', 'Clone specific branch')
+    .option('--template', 'Treat as template repository')
     .on('--help', () => {
     showCloneHelp();
 })
-    .action(async (userRepo, projectName) => {
+    .action(async (userRepo, projectName, options) => {
+    if (options.help) {
+        showCloneHelp();
+        return;
+    }
     if (!userRepo) {
         console.log('\n' + chalk.hex('#ff4757')('❌ Error: Repository is required'));
         console.log(chalk.hex('#95afc0')('   Format: user/repo or provider:user/repo'));
@@ -124,7 +141,7 @@ program
         return;
     }
     try {
-        await cloneRepo(userRepo, projectName);
+        await cloneRepo(userRepo, projectName, options);
     }
     catch (error) {
         handleCommandError('clone repository', error);
@@ -167,13 +184,22 @@ program
 // ANALYZE COMMAND - Terminal dashboard with analytics
 program
     .command('analyze')
+    .alias('stats')
     .description(chalk.hex('#667eea')('📊 ') + chalk.hex('#4facfe')('Show CLI usage analytics and framework statistics'))
+    .option('--export', 'Export analytics data to JSON file')
+    .option('--reset', 'Reset analytics history')
+    .option('--detailed', 'Show detailed analytics breakdown')
+    .option('-h, --help', 'Show this help message')
     .on('--help', () => {
     showAnalyzeHelp();
 })
-    .action(async () => {
+    .action(async (options) => {
     try {
-        await analyzeCommand();
+        if (options.help) {
+            showAnalyzeHelp();
+            return;
+        }
+        await analyzeCommand(options);
     }
     catch (error) {
         handleCommandError('show analytics', error);
@@ -183,14 +209,16 @@ program
 program
     .command('update')
     .alias('u')
-    .description(chalk.hex('#ff6b6b')('🔄 ') + chalk.hex('#fd79a8')('Update CLI, dependencies, and cache'))
+    .description(chalk.hex('#ff6b6b')('🔄 ') + chalk.hex('#fd79a8')('Update project dependencies with breaking change detection'))
+    .argument('[packages]', chalk.hex('#95afc0')('Comma-separated list of packages to update (optional)'))
+    .option('--latest', 'Update to latest versions (may include breaking changes)')
     .option('-h, --help', 'Show help for update command')
     .on('--help', () => {
     showUpdateHelp();
 })
-    .action(async (options) => {
+    .action(async (packages, options) => {
     try {
-        await updateCommand(options);
+        await updateCommand(packages, options);
     }
     catch (error) {
         handleCommandError('update', error);
@@ -204,15 +232,20 @@ program
     .option('--node-modules', 'Clean node_modules directories')
     .option('--build', 'Clean build/dist directories')
     .option('--cache', 'Clean package manager caches')
-    .option('--logs', 'Clean log files')
-    .option('--all', 'Clean everything (safe)')
+    .option('--logs', 'Clean log files and debug outputs')
+    .option('--all', 'Clean everything (safe operation)')
     .option('--deep', 'Deep clean (includes lock files)')
     .option('--dry-run', 'Preview what would be cleaned')
+    .option('-h, --help', 'Show help for clean command')
     .on("--help", () => {
     showCleanHelp();
 })
     .action(async (options) => {
     try {
+        if (options.help) {
+            showCleanHelp();
+            return;
+        }
         displayCommandBanner('clean', 'Clean development artifacts and caches');
         await cleanCommand(options);
     }
@@ -270,10 +303,20 @@ program
     .description(chalk.hex('#00d2d3')('🗄️ ') + chalk.hex('#0084ff')('Manage CLI cache system'))
     .argument('[subcommand]', 'Cache subcommand (stats, clear, info, optimize)')
     .argument('[type]', 'Type for clear command (projects, analysis, packages, templates, system, all)')
-    .action(async (subcommand, type) => {
+    .option('--stats', 'Show cache statistics')
+    .option('--clear [type]', 'Clear cache (optionally specify type)')
+    .option('--info', 'Show cache configuration')
+    .option('--optimize', 'Optimize cache performance')
+    .option('--size', 'Show cache size information')
+    .option('-h, --help', 'Show help for cache command')
+    .on('--help', async () => {
+    const { showCacheHelp } = await import('./commands/cache.js');
+    showCacheHelp();
+})
+    .action(async (subcommand, type, options) => {
     try {
         const { cacheCommand } = await import('./commands/cache.js');
-        await cacheCommand(subcommand, type);
+        await cacheCommand(subcommand, type, options);
     }
     catch (error) {
         handleCommandError('cache', error);
@@ -284,7 +327,7 @@ program
     .command('deploy')
     .description(chalk.hex('#ff9a9e')('🚀 ') + chalk.hex('#fd79a8')('Deploy your project (Coming Soon)'))
     .on('--help', () => {
-    // Help is handled in the command file
+    showDeployHelp();
 })
     .action(async () => {
     try {

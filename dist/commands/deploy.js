@@ -4,32 +4,40 @@
 import chalk from 'chalk';
 import gradient from 'gradient-string';
 import boxen from 'boxen';
+import { createStandardHelp } from '../utils/helpFormatter.js';
 /**
  * Display help for deploy command
  */
 export function showDeployHelp() {
-    const piGradient = gradient(['#00c6ff', '#0072ff']);
-    const headerGradient = gradient(['#ff9a9e', '#fecfef']);
-    console.log('\n' + boxen(headerGradient('🚀 Deploy Command Help') + '\n\n' +
-        chalk.white('Deploy your projects to various cloud platforms seamlessly.') + '\n' +
-        chalk.white('This feature is currently under development!') + '\n\n' +
-        chalk.cyan('Usage:') + '\n' +
-        chalk.white(`  ${piGradient('pi')} ${chalk.hex('#10ac84')('deploy')}`) + '\n\n' +
-        chalk.cyan('Options:') + '\n' +
-        chalk.gray('  -h, --help    Display help for this command') + '\n\n' +
-        chalk.cyan('Examples:') + '\n' +
-        chalk.gray(`  ${piGradient('pi')} ${chalk.hex('#10ac84')('deploy')}              # Deploy current project`) + '\n' +
-        chalk.gray(`  ${piGradient('pi')} ${chalk.hex('#10ac84')('deploy')} ${chalk.hex('#ff6b6b')('--help')}     # Show this help message`) + '\n\n' +
-        chalk.hex('#00d2d3')('🔮 Planned Features:') + '\n' +
-        chalk.hex('#95afc0')('  • Deploy to Vercel, Netlify, AWS') + '\n' +
-        chalk.hex('#95afc0')('  • Docker container deployment') + '\n' +
-        chalk.hex('#95afc0')('  • Environment variable management') + '\n' +
-        chalk.hex('#95afc0')('  • CI/CD pipeline setup'), {
-        padding: 1,
-        borderStyle: 'round',
-        borderColor: 'magenta',
-        backgroundColor: '#0a0a0a'
-    }));
+    const helpConfig = {
+        commandName: 'deploy',
+        emoji: '🚀',
+        description: 'Deploy your projects to various cloud platforms seamlessly.\nThis feature is currently under development!',
+        usage: ['pi deploy'],
+        options: [
+            { flag: '-h, --help', description: 'Display help for this command' }
+        ],
+        examples: [
+            { command: 'pi deploy', description: 'Deploy current project' },
+            { command: 'pi deploy --help', description: 'Show this help message' }
+        ],
+        additionalSections: [
+            {
+                title: '🔮 Planned Features',
+                items: [
+                    '• Deploy to Vercel, Netlify, AWS',
+                    '• Docker container deployment',
+                    '• Environment variable management',
+                    '• CI/CD pipeline setup'
+                ]
+            }
+        ],
+        tips: [
+            'This feature is currently under development - stay tuned!',
+            'Follow the project on GitHub for updates and releases'
+        ]
+    };
+    createStandardHelp(helpConfig);
 }
 /**
  * Display coming soon animation

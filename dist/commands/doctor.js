@@ -9,6 +9,7 @@ import path from 'path';
 import boxen from 'boxen';
 import gradient from 'gradient-string';
 import { displaySuccessMessage, displayErrorMessage } from '../utils/dashboard.js';
+import { createStandardHelp } from '../utils/helpFormatter.js';
 /**
  * Check if command exists
  */
@@ -181,35 +182,33 @@ async function autoFixIssue(issue, projectPath) {
  * Display help for doctor command
  */
 export function showDoctorHelp() {
+    const helpConfig = {
+        commandName: 'doctor',
+        emoji: '🩺',
+        description: 'Diagnose and fix common development issues.\nComprehensive health check for your development environment and project setup.',
+        usage: ['pi doctor [options]', 'pi diagnose [options]  # (alias)'],
+        options: [
+            { flag: '--fix', description: 'Automatically fix detected issues' },
+            { flag: '--node', description: 'Check Node.js and npm setup only' },
+            { flag: '--deps', description: 'Check project dependencies only' },
+            { flag: '--tools', description: 'Check development tools only' },
+            { flag: '--verbose', description: 'Show detailed diagnostic information' },
+            { flag: '-h, --help', description: 'Show this help message' }
+        ],
+        examples: [
+            { command: 'pi doctor', description: 'Complete health check' },
+            { command: 'pi doctor --fix', description: 'Check and auto-fix issues' },
+            { command: 'pi doctor --deps', description: 'Check dependencies only' },
+            { command: 'pi doctor --node --verbose', description: 'Detailed Node.js check' }
+        ],
+        tips: [
+            'Use --fix to automatically resolve common issues',
+            'Run with --verbose for detailed diagnostic information',
+            '\'pi diagnose\' is an alias for \'pi doctor\''
+        ]
+    };
     console.clear();
-    const helpContent = boxen(gradient(['#ff6b6b', '#4ecdc4'])('🩺 Doctor Command Help') + '\n\n' +
-        chalk.white('Diagnose and fix common development issues') + '\n\n' +
-        chalk.cyan('Usage:') + '\n' +
-        chalk.white('  pi doctor [options]') + '\n' +
-        chalk.white('  pi diagnose [options]') + chalk.gray(' (alias)') + '\n\n' +
-        chalk.cyan('Description:') + '\n' +
-        chalk.white('  Comprehensive health check for your development environment') + '\n' +
-        chalk.white('  and project setup. Detects and fixes common issues.') + '\n\n' +
-        chalk.cyan('Options:') + '\n' +
-        chalk.white('  --fix') + chalk.gray('          Automatically fix detected issues') + '\n' +
-        chalk.white('  --node') + chalk.gray('         Check Node.js and npm setup only') + '\n' +
-        chalk.white('  --deps') + chalk.gray('         Check project dependencies only') + '\n' +
-        chalk.white('  --tools') + chalk.gray('        Check development tools only') + '\n' +
-        chalk.white('  --verbose') + chalk.gray('      Show detailed diagnostic information') + '\n' +
-        chalk.white('  -h, --help') + chalk.gray('     Show this help message') + '\n\n' +
-        chalk.cyan('Examples:') + '\n' +
-        chalk.gray('  # Complete health check') + '\n' +
-        chalk.white('  pi doctor') + '\n\n' +
-        chalk.gray('  # Check and auto-fix issues') + '\n' +
-        chalk.white('  pi doctor --fix') + '\n\n' +
-        chalk.gray('  # Check dependencies only') + '\n' +
-        chalk.white('  pi doctor --deps'), {
-        padding: 1,
-        margin: 1,
-        borderStyle: 'round',
-        borderColor: 'green'
-    });
-    console.log(helpContent);
+    createStandardHelp(helpConfig);
 }
 /**
  * Main doctor command function

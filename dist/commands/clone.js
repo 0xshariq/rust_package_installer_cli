@@ -1,54 +1,74 @@
 import chalk from 'chalk';
-import gradient from 'gradient-string';
-import boxen from 'boxen';
 import path from 'path';
 import { cloneRepo as cloneRepoUtil } from '../utils/cloneUtils.js';
 import { CacheManager } from '../utils/cacheUtils.js';
+import { createStandardHelp } from '../utils/helpFormatter.js';
 /**
- * Display help for clone command
+ * Display help for clone command using standardized format
  */
 export function showCloneHelp() {
-    const piGradient = gradient(['#00c6ff', '#0072ff']);
-    const headerGradient = gradient(['#4facfe', '#00f2fe']);
-    console.log('\n' + boxen(headerGradient('📥 Clone Command Help') + '\n\n' +
-        chalk.white('Clone any public repository from GitHub, GitLab, BitBucket, or SourceHut.') + '\n' +
-        chalk.white('Automatically installs dependencies, creates .env files, and tracks usage.') + '\n\n' +
-        chalk.cyan('Usage:') + '\n' +
-        chalk.white(`  ${piGradient('pi')} ${chalk.hex('#00d2d3')('clone')} <user/repo> [project-name]`) + '\n\n' +
-        chalk.cyan('Options:') + '\n' +
-        chalk.gray('  -h, --help       Display help for this command') + '\n' +
-        chalk.gray('  --offline        Use cached templates if available') + '\n' +
-        chalk.gray('  --no-deps        Skip dependency installation') + '\n' +
-        chalk.gray('  --no-git         Skip git initialization') + '\n\n' +
-        chalk.cyan('Examples:') + '\n' +
-        chalk.gray(`  ${piGradient('pi')} ${chalk.hex('#00d2d3')('clone')} facebook/react my-react-copy      # Clone from GitHub with custom name`) + '\n' +
-        chalk.gray(`  ${piGradient('pi')} ${chalk.hex('#00d2d3')('clone')} gitlab:user/project               # Clone from GitLab`) + '\n' +
-        chalk.gray(`  ${piGradient('pi')} ${chalk.hex('#00d2d3')('clone')} bitbucket:user/repo               # Clone from BitBucket`) + '\n' +
-        chalk.gray(`  ${piGradient('pi')} ${chalk.hex('#00d2d3')('clone')} sourcehut:user/repo               # Clone from SourceHut`) + '\n' +
-        chalk.gray(`  ${piGradient('pi')} ${chalk.hex('#00d2d3')('clone')} user/repo ${chalk.hex('#ff6b6b')('--offline')}              # Use cached version if available`) + '\n' +
-        chalk.gray(`  ${piGradient('pi')} ${chalk.hex('#00d2d3')('clone')} ${chalk.hex('#ff6b6b')('--help')}                            # Show this help message`) + '\n\n' +
-        chalk.hex('#00d2d3')('💡 Supported Platforms:') + '\n' +
-        chalk.hex('#95afc0')('  • GitHub (default): user/repo') + '\n' +
-        chalk.hex('#95afc0')('  • GitLab: gitlab:user/repo') + '\n' +
-        chalk.hex('#95afc0')('  • BitBucket: bitbucket:user/repo') + '\n' +
-        chalk.hex('#95afc0')('  • SourceHut: sourcehut:user/repo') + '\n\n' +
-        chalk.hex('#ffa502')('⚡ Features:') + '\n' +
-        chalk.hex('#95afc0')('  • Automatic dependency installation') + '\n' +
-        chalk.hex('#95afc0')('  • Environment file creation from templates') + '\n' +
-        chalk.hex('#95afc0')('  • Git repository initialization') + '\n' +
-        chalk.hex('#95afc0')('  • Usage tracking and history') + '\n' +
-        chalk.hex('#95afc0')('  • Offline mode with cached templates'), {
-        padding: 1,
-        borderStyle: 'round',
-        borderColor: 'cyan',
-        backgroundColor: '#0a0a0a'
-    }));
+    const helpConfig = {
+        commandName: 'Clone',
+        emoji: '📥',
+        description: 'Clone any public repository from GitHub, GitLab, BitBucket, or SourceHut.\nAutomatically installs dependencies, creates .env files, and tracks usage.',
+        usage: [
+            'clone <user/repo> [project-name] [options]',
+            'clone [options]'
+        ],
+        options: [
+            { flag: '-h, --help', description: 'Display help for this command' },
+            { flag: '--offline', description: 'Use cached templates if available' },
+            { flag: '--no-deps', description: 'Skip dependency installation' },
+            { flag: '--no-git', description: 'Skip git initialization' },
+            { flag: '--shallow', description: 'Create shallow clone (faster)' },
+            { flag: '--branch <name>', description: 'Clone specific branch' },
+            { flag: '--template', description: 'Treat as template repository' }
+        ],
+        examples: [
+            { command: 'clone facebook/react', description: 'Clone from GitHub' },
+            { command: 'clone facebook/react my-app', description: 'Clone with custom name' },
+            { command: 'clone gitlab:user/project', description: 'Clone from GitLab' },
+            { command: 'clone bitbucket:user/repo', description: 'Clone from BitBucket' },
+            { command: 'clone sourcehut:user/repo', description: 'Clone from SourceHut' },
+            { command: 'clone user/repo --offline', description: 'Use cached version' },
+            { command: 'clone user/repo --no-deps', description: 'Skip dependencies' },
+            { command: 'clone user/repo --shallow', description: 'Shallow clone' }
+        ],
+        additionalSections: [
+            {
+                title: 'Supported Platforms',
+                items: [
+                    'GitHub (default): user/repo',
+                    'GitLab: gitlab:user/repo',
+                    'BitBucket: bitbucket:user/repo',
+                    'SourceHut: sourcehut:user/repo'
+                ]
+            },
+            {
+                title: 'Features',
+                items: [
+                    'Automatic dependency installation',
+                    'Environment file creation from templates',
+                    'Git repository initialization',
+                    'Usage tracking and history',
+                    'Offline mode with cached templates',
+                    'Shallow cloning for faster downloads',
+                    'Branch-specific cloning'
+                ]
+            }
+        ],
+        tips: [
+            'Use --offline flag for cached repositories to work without internet',
+            'Shallow clones are faster but have limited git history'
+        ]
+    };
+    createStandardHelp(helpConfig);
 }
 export async function cloneRepo(userRepo, projectName, options = {}) {
     const startTime = Date.now();
     const cacheManager = new CacheManager();
     // Check for help flag
-    if (userRepo === '--help' || userRepo === '-h') {
+    if (options.help || options['-h'] || options['--help']) {
         showCloneHelp();
         return;
     }
@@ -58,12 +78,14 @@ export async function cloneRepo(userRepo, projectName, options = {}) {
         actualProjectName = path.basename(process.cwd());
         console.log(chalk.cyan(`Using current directory name: ${chalk.bold(actualProjectName)}`));
     }
-    // Parse additional options from arguments
-    const args = process.argv.slice(3);
+    // Configure clone options from passed options
     const cloneOptions = {
-        offline: args.includes('--offline'),
-        noDeps: args.includes('--no-deps'),
-        noGit: args.includes('--no-git'),
+        offline: options.offline || false,
+        noDeps: options.noDeps || options['no-deps'] || false,
+        noGit: options.noGit || options['no-git'] || false,
+        shallow: options.shallow || false,
+        branch: options.branch || null,
+        template: options.template || false,
         ...options
     };
     try {

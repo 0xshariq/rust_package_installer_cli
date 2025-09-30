@@ -18,14 +18,29 @@ const __dirname = path.dirname(__filename);
  */
 export function getPackageVersion() {
     try {
-        const packageJsonPath = getPackageJsonPath();
-        const packageJsonContent = fs.readFileSync(packageJsonPath, 'utf-8');
-        const packageJson = JSON.parse(packageJsonContent);
-        return packageJson.version || '3.4.0';
+        // Try multiple paths to find package.json
+        const possiblePaths = [
+            getPackageJsonPath(),
+            path.resolve(process.cwd(), 'package.json'),
+            path.resolve(__dirname, '../../package.json'),
+            path.resolve(__dirname, '../../../package.json')
+        ];
+        for (const packagePath of possiblePaths) {
+            if (fs.existsSync(packagePath)) {
+                const packageJsonContent = fs.readFileSync(packagePath, 'utf-8');
+                const packageJson = JSON.parse(packageJsonContent);
+                if (packageJson.version) {
+                    return packageJson.version;
+                }
+            }
+        }
+        // Fallback to hardcoded version as last resort
+        console.warn('Warning: Could not read version from package.json, using fallback version');
+        return '3.6.0';
     }
     catch (error) {
         console.warn('Warning: Could not read version from package.json, using fallback version');
-        return '3.2.0';
+        return '3.6.0';
     }
 }
 /**

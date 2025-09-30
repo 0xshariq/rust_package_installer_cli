@@ -292,7 +292,6 @@ function extractInstalledPackages(output, language) {
         switch (language) {
             case 'javascript':
             case 'typescript':
-            case 'nodejs':
                 // Parse npm/yarn/pnpm/bun output
                 const jsMatches = output.match(/(?:added|installed)\s+(.+?)(?:\s|$)/gi);
                 if (jsMatches) {
@@ -387,7 +386,6 @@ export async function installPackages(projectPath, language, packages, options =
     switch (language) {
         case 'javascript':
         case 'typescript':
-        case 'nodejs':
             const flags = [
                 isDev ? (packageManager.name === 'npm' ? '--save-dev' : packageManager.name === 'yarn' ? '--dev' : '--save-dev') : '',
                 exact ? '--save-exact' : '',
