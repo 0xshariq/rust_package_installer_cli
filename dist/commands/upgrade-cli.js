@@ -19,9 +19,7 @@ export function showUpgradeHelp() {
         emoji: '🚀',
         description: 'Update Package Installer CLI to the latest version with intelligent upgrade management.\nIncludes breaking change detection and version compatibility checks!',
         usage: ['pi upgrade-cli'],
-        options: [
-            { flag: '-h, --help', description: 'Display help for this command' }
-        ],
+        options: [],
         examples: [
             { command: 'pi upgrade-cli', description: 'Smart upgrade with breaking change detection' },
             { command: 'pi upgrade-cli --help', description: 'Show this help message' }

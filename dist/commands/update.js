@@ -731,7 +731,6 @@ export function showUpdateHelp() {
             'u [options]   # alias'
         ],
         options: [
-            { flag: '-h, --help', description: 'Show this help message' },
             { flag: '--latest', description: 'Update to latest versions (breaking changes possible)' }
         ],
         examples: [

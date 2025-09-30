@@ -26,8 +26,7 @@ export function showCacheHelp() {
             { flag: '--clear [type]', description: 'Clear cache (optional type)' },
             { flag: '--info', description: 'Show cache information' },
             { flag: '--optimize', description: 'Optimize cache' },
-            { flag: '--size', description: 'Show cache size only' },
-            { flag: '-h, --help', description: 'Show this help message' }
+            { flag: '--size', description: 'Show cache size only' }
         ],
         examples: [
             { command: 'cache stats', description: 'Show cache statistics' },

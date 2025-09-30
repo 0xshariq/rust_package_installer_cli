@@ -5,10 +5,11 @@ import boxen from 'boxen';
 import path from 'path';
 import fs from 'fs-extra';
 import { createStandardHelp } from '../utils/helpFormatter.js';
-import { addFeature, detectProjectStack, SUPPORTED_FEATURES } from '../utils/featureInstaller.js';
+import { addFeature, detectProjectStack, SUPPORTED_FEATURES, ensureFeaturesLoaded } from '../utils/featureInstaller.js';
 import { historyManager } from '../utils/historyManager.js';
 import { cacheProjectData } from '../utils/cacheManager.js';
 import { getFeaturesJsonPath, getFeaturesPath } from '../utils/pathResolver.js';
+import { displayCommandBanner } from '../utils/banner.js';
 /**
  * Helper function to capitalize strings
  */
@@ -18,7 +19,13 @@ function capitalize(str) {
 /**
  * Get features.json configuration with new jsonPath structure
  */
+// Cache for features config to avoid repeated file reads
+let featuresConfigCache = null;
 async function getFeaturesConfig() {
+    // Return cached config if available
+    if (featuresConfigCache) {
+        return featuresConfigCache;
+    }
     try {
         // Use the centralized path resolver
         const featuresPath = getFeaturesJsonPath();
@@ -42,12 +49,12 @@ async function getFeaturesConfig() {
                             };
                         }
                         else {
-                            console.warn(chalk.yellow(`⚠️  Individual feature file not found: ${individualFeaturePath}`));
+                            // Silently skip missing files to avoid console spam
                             processedConfig[featureName] = featureConfig;
                         }
                     }
                     catch (error) {
-                        console.warn(chalk.yellow(`⚠️  Could not load individual feature file for ${featureName}`));
+                        // Silently handle errors to avoid console spam
                         processedConfig[featureName] = featureConfig;
                     }
                 }
@@ -56,13 +63,16 @@ async function getFeaturesConfig() {
                     processedConfig[featureName] = featureConfig;
                 }
             }
-            return { features: processedConfig };
+            // Cache the processed config
+            featuresConfigCache = { features: processedConfig };
+            return featuresConfigCache;
         }
-        console.warn(chalk.yellow(`⚠️  features.json not found at: ${featuresPath}`));
-        return { features: {} };
+        // Return empty config without warning to avoid console spam
+        featuresConfigCache = { features: {} };
+        return featuresConfigCache;
     }
     catch (error) {
-        console.warn(chalk.yellow('⚠️  Error reading features.json, using fallback'));
+        // Return fallback config without warning
         return { features: {} };
     }
 }
@@ -88,6 +98,7 @@ async function getSubFeatures(category) {
  * List available features from features.json with descriptions
  */
 async function listAvailableFeatures() {
+    await ensureFeaturesLoaded();
     const featuresConfig = await getFeaturesConfig();
     if (!featuresConfig.features || Object.keys(featuresConfig.features).length === 0) {
         console.log(chalk.yellow('⚠️  No features found in configuration'));
@@ -269,6 +280,7 @@ function showEnhancedSetupInstructions(feature, provider) {
  * Show help for add command
  */
 export async function showAddHelp() {
+    await ensureFeaturesLoaded();
     const featuresConfig = await getFeaturesConfig();
     const availableFeatures = Object.keys(featuresConfig.features || {});
     const helpConfig = {
@@ -281,8 +293,7 @@ export async function showAddHelp() {
         ],
         options: [
             { flag: '-l, --list', description: 'List all available features' },
-            { flag: '-v, --verbose', description: 'Show detailed output' },
-            { flag: '-h, --help', description: 'Show this help message' }
+            { flag: '-v, --verbose', description: 'Show detailed output' }
         ],
         examples: [
             { command: 'add', description: 'Interactive feature selection' },
@@ -334,21 +345,19 @@ export async function showAddHelp() {
  */
 export async function addCommand(feature, provider, options = {}) {
     try {
-        // Handle help flag
-        if (options.help || feature === '--help' || feature === '-h') {
-            await showAddHelp();
-            return;
-        }
+        // Ensure features are loaded first
+        await ensureFeaturesLoaded();
         // Handle list flag
         if (options.list || feature === '--list' || feature === '-l') {
             await listAvailableFeatures();
             return;
         }
+        // Display command banner
+        displayCommandBanner('Add', 'Add new features to your project with integrated templates and configurations');
         // Initialize history manager
         await historyManager.init();
         // Show disclaimer
         showFeatureDisclaimer();
-        console.log(chalk.hex('#9c88ff')('\n🔮 Adding features to your project...'));
         // Use provided project path or current directory
         const projectPath = options.projectPath || process.cwd();
         let projectInfo;

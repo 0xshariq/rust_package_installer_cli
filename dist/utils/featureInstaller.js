@@ -29,7 +29,6 @@ async function loadFeatures() {
             const featuresConfig = featuresData.features || featuresData;
             // Get available features using the centralized function
             const availableFeatures = await getAvailableFeatures();
-            console.log(chalk.gray(`📦 Loading ${availableFeatures.length} available features...`));
             // Process each feature and load its individual JSON file
             for (const [featureName, config] of Object.entries(featuresConfig)) {
                 const featureConfig = config;
@@ -89,10 +88,17 @@ async function loadFeatures() {
         console.warn(chalk.yellow('⚠️  Could not load features.json, using fallback configuration'));
     }
 }
-// Initialize features on module load
-await loadFeatures();
+// Lazy loading flag
+let featuresLoaded = false;
+// Lazy load features when needed
+async function ensureFeaturesLoaded() {
+    if (!featuresLoaded) {
+        await loadFeatures();
+        featuresLoaded = true;
+    }
+}
 // Export for use in other modules
-export { SUPPORTED_FEATURES };
+export { SUPPORTED_FEATURES, ensureFeaturesLoaded };
 // Re-export path utilities for backward compatibility
 export { getCliRootPath } from './pathResolver.js';
 /**
@@ -348,7 +354,7 @@ export async function addFeature(featureName, provider, projectPath = process.cw
     const spinner = ora(chalk.hex('#9c88ff')(`Adding ${featureName} feature...`)).start();
     try {
         // Ensure features are loaded
-        await loadFeatures();
+        await ensureFeaturesLoaded();
         // Validate project path exists
         if (!await fs.pathExists(projectPath)) {
             throw new Error(`Project path does not exist: ${projectPath}`);

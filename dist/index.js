@@ -16,8 +16,10 @@ import { updateCommand, showUpdateHelp } from './commands/update.js';
 import { analyzeCommand, showAnalyzeHelp } from './commands/analyze.js';
 import { deployCommand, showDeployHelp } from './commands/deploy.js';
 import { cleanCommand, showCleanHelp } from './commands/clean.js';
+import { cacheCommand, showCacheHelp } from './commands/cache.js';
 import { environmentCommand, showEnvironmentHelp } from './commands/env.js';
 import { doctorCommand, showDoctorHelp } from './commands/doctor.js';
+// Import utilities
 import { initializeCache } from './utils/cacheManager.js';
 import { displayBanner, displayCommandBanner } from './utils/banner.js';
 import { getPackageJsonPath } from './utils/pathResolver.js';
@@ -155,11 +157,16 @@ program
     .argument('[provider]', chalk.hex('#95afc0')('Provider for the feature (optional)'))
     .option('-l, --list', chalk.hex('#95afc0')('List all available features'))
     .option('-v, --verbose', chalk.hex('#95afc0')('Show detailed output'))
+    .option('-h, --help', chalk.hex('#95afc0')('Display help for this command'))
     .on('--help', () => {
     showAddHelp();
 })
     .action(async (feature, provider, options) => {
     try {
+        if (options.help) {
+            showAddHelp();
+            return;
+        }
         await addCommand(feature, provider, options);
     }
     catch (error) {
@@ -169,6 +176,7 @@ program
 // UPGRADE-CLI COMMAND - Update CLI to latest version
 program
     .command('upgrade-cli')
+    .alias('upgrade')
     .description(chalk.hex('#ff6b6b')('🚀 ') + chalk.hex('#fd79a8')('Update Package Installer CLI to the latest version'))
     .on('--help', () => {
     showUpgradeHelp();
@@ -195,10 +203,6 @@ program
 })
     .action(async (options) => {
     try {
-        if (options.help) {
-            showAnalyzeHelp();
-            return;
-        }
         await analyzeCommand(options);
     }
     catch (error) {
@@ -310,12 +314,10 @@ program
     .option('--size', 'Show cache size information')
     .option('-h, --help', 'Show help for cache command')
     .on('--help', async () => {
-    const { showCacheHelp } = await import('./commands/cache.js');
     showCacheHelp();
 })
     .action(async (subcommand, type, options) => {
     try {
-        const { cacheCommand } = await import('./commands/cache.js');
         await cacheCommand(subcommand, type, options);
     }
     catch (error) {

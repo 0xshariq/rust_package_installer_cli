@@ -8,7 +8,8 @@ import os from 'os';
 import gradientString from 'gradient-string';
 import boxen from 'boxen';
 import { createStandardHelp } from '../utils/helpFormatter.js';
-import { createBanner, displaySystemInfo, displaySuccessMessage } from '../utils/dashboard.js';
+import { displayCommandBanner } from '../utils/banner.js';
+import { displaySystemInfo, displaySuccessMessage } from '../utils/dashboard.js';
 import { HistoryManager } from '../utils/historyManager.js';
 /**
  * Display help for analyze command using standardized format
@@ -25,8 +26,7 @@ export function showAnalyzeHelp() {
         options: [
             { flag: '--export', description: 'Export analytics data to JSON file' },
             { flag: '--reset', description: 'Reset analytics history' },
-            { flag: '--detailed', description: 'Show detailed analytics breakdown' },
-            { flag: '-h, --help', description: 'Show this help message' }
+            { flag: '--detailed', description: 'Show detailed analytics breakdown' }
         ],
         examples: [
             { command: 'analyze', description: 'Show complete analytics dashboard' },
@@ -65,7 +65,7 @@ export async function analyzeCommand(options = {}) {
         showAnalyzeHelp();
         return;
     }
-    createBanner('Package Installer CLI Analytics');
+    displayCommandBanner('Analytics', 'Comprehensive project analytics and usage insights');
     const historyManager = new HistoryManager();
     try {
         // Load analytics data from history.json

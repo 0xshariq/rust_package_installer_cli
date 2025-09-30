@@ -4,6 +4,7 @@
 import chalk from 'chalk';
 import path from 'path';
 import { createStandardHelp } from '../utils/helpFormatter.js';
+import { displayCommandBanner } from '../utils/banner.js';
 import { promptProjectName, promptFrameworkSelection, promptLanguageSelection, promptTemplateSelection, promptFrameworkOptions, promptTemplateConfirmation, promptFeatureSelection, hasFrameworkOptions, hasUIOptions, hasBundlerOptions, shouldShowTemplates } from '../utils/prompts.js';
 import { resolveTemplatePath, generateTemplateName, templateExists, getFrameworkConfig } from '../utils/templateResolver.js';
 import { createProjectFromTemplate, installDependenciesForCreate } from '../utils/templateCreator.js';
@@ -22,7 +23,6 @@ export function showCreateHelp() {
             'create [options]'
         ],
         options: [
-            { flag: '-h, --help', description: 'Display help for this command' },
             { flag: '--show-cache', description: 'Show cached preferences' },
             { flag: '--clear-cache', description: 'Clear cached preferences' }
         ],
@@ -79,6 +79,8 @@ export async function createProject(providedName, options) {
         return;
     }
     try {
+        // Display command banner
+        displayCommandBanner('Create', 'Create stunning web applications with integrated templates and features');
         console.log('\n' + chalk.hex('#10ac84')('🚀 Welcome to Package Installer CLI!'));
         console.log(chalk.hex('#95afc0')('Let\'s create something amazing together...'));
         // Step 1: Get project name (prompt if not provided)

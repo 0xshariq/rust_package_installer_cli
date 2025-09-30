@@ -8,6 +8,7 @@ import path from 'path';
 import semver from 'semver';
 import https from 'https';
 import { createStandardHelp } from '../utils/helpFormatter.js';
+import { displayCommandBanner } from '../utils/banner.js';
 import { getSupportedLanguages, getLanguageConfig } from '../utils/languageConfig.js';
 const execAsync = promisify(exec);
 // Generate PROJECT_TYPES from shared language configuration with enhanced registry support
@@ -380,7 +381,6 @@ export function showCheckHelp() {
             'check [options]'
         ],
         options: [
-            { flag: '-h, --help', description: 'Display help for this command' },
             { flag: '-v, --verbose', description: 'Show detailed information for all packages' }
         ],
         examples: [
@@ -427,6 +427,8 @@ export async function checkCommand(packageName, options) {
         packageName = undefined;
     }
     try {
+        // Display command banner
+        displayCommandBanner('Check', 'Check package versions and updates for your project dependencies');
         console.log('\n' + chalk.hex('#f39c12')('🔍 Starting package check...'));
         if (packageName && packageName !== '--verbose' && packageName !== '-v') {
             await checkSinglePackage(packageName, isVerbose);

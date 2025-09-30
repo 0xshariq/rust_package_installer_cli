@@ -192,8 +192,7 @@ export function showDoctorHelp() {
             { flag: '--node', description: 'Check Node.js and npm setup only' },
             { flag: '--deps', description: 'Check project dependencies only' },
             { flag: '--tools', description: 'Check development tools only' },
-            { flag: '--verbose', description: 'Show detailed diagnostic information' },
-            { flag: '-h, --help', description: 'Show this help message' }
+            { flag: '--verbose', description: 'Show detailed diagnostic information' }
         ],
         examples: [
             { command: 'pi doctor', description: 'Complete health check' },

@@ -25,13 +25,20 @@ export function createStandardHelp(config) {
     });
     helpContent += '\n';
     // Options
+    helpContent += chalk.cyan('Options:') + '\n';
+    // Check if help flag already exists
+    const hasHelpFlag = config.options && config.options.some(option => option.flag.includes('-h') || option.flag.includes('--help'));
+    // Add custom options first
     if (config.options && config.options.length > 0) {
-        helpContent += chalk.cyan('Options:') + '\n';
         config.options.forEach(option => {
             helpContent += chalk.gray(`  ${option.flag.padEnd(20)} ${option.description}`) + '\n';
         });
-        helpContent += '\n';
     }
+    // Add the global help flag only if it doesn't already exist
+    if (!hasHelpFlag) {
+        helpContent += chalk.gray(`  -h, --help`.padEnd(20) + ' Show this help message') + '\n';
+    }
+    helpContent += '\n';
     // Examples
     if (config.examples && config.examples.length > 0) {
         helpContent += chalk.cyan('Examples:') + '\n';

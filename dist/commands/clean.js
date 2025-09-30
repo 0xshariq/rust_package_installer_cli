@@ -6,6 +6,7 @@ import ora from 'ora';
 import fs from 'fs-extra';
 import path from 'path';
 import { createStandardHelp } from '../utils/helpFormatter.js';
+import { displayCommandBanner } from '../utils/banner.js';
 /**
  * Display help for clean command
  */
@@ -25,8 +26,7 @@ export function showCleanHelp() {
             { flag: '--logs', description: 'Clean log files and debug outputs' },
             { flag: '--all', description: 'Clean everything (safe operation)' },
             { flag: '--deep', description: 'Deep clean (includes lock files)' },
-            { flag: '--dry-run', description: 'Preview what would be cleaned' },
-            { flag: '-h, --help', description: 'Show this help message' }
+            { flag: '--dry-run', description: 'Preview what would be cleaned' }
         ],
         examples: [
             { command: 'clean --build', description: 'Clean build directories only' },
@@ -65,7 +65,8 @@ export async function cleanCommand(options = {}) {
         showCleanHelp();
         return;
     }
-    console.clear();
+    // Display command banner
+    displayCommandBanner('Clean', 'Clean development artifacts, caches, and temporary files from your project');
     console.log(chalk.hex('#ffa502')('🧹 Project Cleaner\n'));
     const projectPath = process.cwd();
     const isDryRun = options['dryRun'] || options['dry-run'];
