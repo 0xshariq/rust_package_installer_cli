@@ -872,35 +872,6 @@ export const ENHANCED_LANGUAGE_CONFIGS = {
             ]
         }
     },
-    // Continue with other languages - abbreviated for space
-    nodejs: {
-        name: 'nodejs',
-        displayName: 'Node.js',
-        description: 'JavaScript runtime built on Chrome\'s V8 engine',
-        icon: '💚',
-        category: 'web',
-        maturity: 'stable',
-        packageManagers: [],
-        configFiles: [],
-        buildFiles: [],
-        sourceFileExtensions: ['.js', '.mjs'],
-        frameworkDetection: [],
-        toolchain: {
-            interpreter: { name: 'Node.js', command: 'node', optional: false, description: 'JavaScript runtime' }
-        },
-        ecosystem: {
-            registry: { name: 'npm', url: 'https://npmjs.com' },
-            community: { github: { repos: 0, stars: 0 }, stackoverflow: { questions: 0, activity: 'high' } },
-            learning: [],
-            trends: { githubStars: 0, stackoverflowQuestions: 0, jobPostings: 0, trendDirection: 'stable' }
-        },
-        compatibility: {
-            operatingSystems: ['windows', 'macos', 'linux'],
-            architectures: ['x64', 'arm64'],
-            containers: true,
-            cloud: []
-        }
-    },
     go: {
         name: 'go',
         displayName: 'Go',
