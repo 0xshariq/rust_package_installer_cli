@@ -1,0 +1,102 @@
+{
+  "jest": {
+    "angularjs": {
+      "typescript": {
+        "tests/angularjs.test.ts": {
+          "action": "create"
+        }
+      }
+    },
+    "expressjs": {
+      "javascript": {
+        "tests/expressjs.test.js": {
+          "action": "create"
+        }
+      },
+      "typescript": {
+        "tests/expressjs.test.ts": {
+          "action": "create"
+        }
+      }
+    },
+    "nestjs": {
+      "typescript": {
+        "tests/nestjs.test.ts": {
+          "action": "create"
+        }
+      }
+    },
+    "nextjs": {
+      "javascript": {
+        "tests/nextjs.test.js": {
+          "action": "create"
+        }
+      },
+      "typescript": {
+        "tests/nextjs.test.ts": {
+          "action": "create"
+        }
+      }
+    },
+    "nuxtjs": {
+      "typescript": {
+        "tests/nuxtjs.test.ts": {
+          "action": "create"
+        }
+      }
+    },
+    "reactjs": {
+      "javascript": {
+        "tests/reactjs.test.js": {
+          "action": "create"
+        }
+      },
+      "typescript": {
+        "tests/reactjs.test.ts": {
+          "action": "create"
+        }
+      }
+    },
+    "reactjs+expressjs+shadcn": {
+      "javascript": {
+        "tests/reactjs.expressjs.shadcn.test.js": {
+          "action": "create"
+        }
+      },
+      "typescript": {
+        "tests/reactjs.expressjs.shadcn.test.ts": {
+          "action": "create"
+        }
+      }
+    },
+    "reactjs+nestjs+shadcn": {
+      "typescript": {
+        "tests/reactjs.expressjs.shadcn.test.ts": {
+          "action": "create"
+        }
+      }
+    },
+    "remixjs": {
+      "typescript": {
+        "tests/remixjs.test.ts": {
+          "action": "create"
+        }
+      }
+    },
+    "vuejs": {
+      "javascript": {
+        "tests/vuejs.test.js": {
+          "action": "create"
+        }
+      },
+      "typescript": {
+        "tests/vuejs.test.ts": {
+          "action": "create"
+        }
+      }
+    }
+  },
+  "cypress": {},
+  "mocha": {},
+  "playwright": {}
+}

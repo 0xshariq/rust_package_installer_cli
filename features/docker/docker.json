@@ -1,0 +1,108 @@
+{
+        "angularjs": {
+          ".dockerignore": {
+            "action": "create"
+          },
+          "docker-compose.yml": {
+            "action": "create"
+          },
+          "Dockerfile": {
+            "action": "create"
+          }
+        },
+        "nestjs": {
+          ".dockerignore": {
+            "action": "create"
+          },
+          "docker-compose.yml": {
+            "action": "create"
+          },
+          "Dockerfile": {
+            "action": "create"
+          }
+        },
+        "nextjs": {
+          ".dockerignore": {
+            "action": "create"
+          },
+          "docker-compose.yml": {
+            "action": "create"
+          },
+          "Dockerfile": {
+            "action": "create"
+          }
+        },
+        "expressjs": {
+          ".dockerignore": {
+            "action": "create"
+          },
+          "docker-compose.yml": {
+            "action": "create"
+          },
+          "Dockerfile": {
+            "action": "create"
+          }
+        },
+        "reactjs": {
+          ".dockerignore": {
+            "action": "create"
+          },
+          "docker-compose.yml": {
+            "action": "create"
+          },
+          "Dockerfile": {
+            "action": "create"
+          }
+        },
+        "reactjs+expressjs+shadcn": {
+          ".dockerignore": {
+            "action": "create"
+          },
+          "docker-compose.yml": {
+            "action": "create"
+          },
+          "Dockerfile": {
+            "action": "create"
+          }
+        },
+        "reactjs+nestjs+shadcn": {
+          ".dockerignore": {
+            "action": "create"
+          },
+          "docker-compose.yml": {
+            "action": "create"
+          },
+          "Dockerfile": {
+            "action": "create"
+          }
+        },
+        "remixjs": {
+          ".dockerignore": {
+            "action": "create"
+          },
+          "docker-compose.yml": {
+            "action": "create"
+          },
+          "Dockerfile": {
+            "action": "create"
+          }
+        },
+        "vuejs": {
+          ".dockerignore": {
+            "action": "create"
+          },
+          "docker-compose.yml": {
+            "action": "create"
+          },
+          "Dockerfile": {
+            "action": "create"
+          }
+        },
+        "django": {},
+        "flask": {},
+        "go": {},
+        "nuxtjs": {},
+        "react-native": {},
+        "ruby": {},
+        "rust": {}
+      }

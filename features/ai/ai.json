@@ -1,0 +1,547 @@
+{
+        "claude": {
+          "expressjs": {
+            "javascript": {
+              ".env": {
+                "action": "append"
+              },
+              "controllers/claudeController.js": {
+                "action": "create"
+              },
+              "index.js": {
+                "action": "prepend"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "routes/claudeRoutes.js": {
+                "action": "create"
+              },
+              "utils/claude.js": {
+                "action": "create"
+              }
+            },
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "controllers/claudeController.ts": {
+                "action": "create"
+              },
+              "index.ts": {
+                "action": "prepend"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "routes/claudeRoutes.ts": {
+                "action": "create"
+              },
+              "utils/claude.ts": {
+                "action": "create"
+              }
+            }
+          },
+          "nestjs": {
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "src/claude/claude.controller.ts": {
+                "action": "create"
+              },
+              "src/claude/claude.module.ts": {
+                "action": "create"
+              },
+              "src/claude/claude.service.ts": {
+                "action": "create"
+              }
+            }
+          },
+          "nextjs": {
+            "javascript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/api/claude/route.js": {
+                "action": "create"
+              },
+              "lib/claude.js": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            },
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/api/claude/route.ts": {
+                "action": "create"
+              },
+              "lib/claude.ts": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            }
+          },
+          "remixjs": {
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/routes/api/claude.ts": {
+                "action": "create"
+              },
+              "app/utils/claude.ts": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            }
+          }
+        },
+        "gemini": {
+          "expressjs": {
+            "javascript": {
+              ".env": {
+                "action": "append"
+              },
+              "controllers/geminiController.js": {
+                "action": "create"
+              },
+              "index.js": {
+                "action": "prepend"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "routes/geminiRoutes.js": {
+                "action": "create"
+              },
+              "utils/gemini.js": {
+                "action": "create"
+              }
+            },
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "controllers/geminiController.ts": {
+                "action": "create"
+              },
+              "index.ts": {
+                "action": "prepend"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "routes/geminiRoutes.ts": {
+                "action": "create"
+              },
+              "utils/gemini.ts": {
+                "action": "create"
+              }
+            }
+          },
+          "nestjs": {
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "src/gemini/gemini.controller.ts": {
+                "action": "create"
+              },
+              "src/gemini/gemini.module.ts": {
+                "action": "create"
+              },
+              "src/gemini/gemini.service.ts": {
+                "action": "create"
+              }
+            }
+          },
+          "nextjs": {
+            "javascript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/api/generate/route.js": {
+                "action": "create"
+              },
+              "lib/gemini.js": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            },
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/api/generate/route.ts": {
+                "action": "create"
+              },
+              "lib/gemini.ts": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            }
+          },
+          "remixjs": {
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/routes/api/gemini.ts": {
+                "action": "create"
+              },
+              "app/utils/gemini.ts": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            }
+          }
+        },
+        "grok": {
+          "expressjs": {
+            "javascript": {
+              ".env": {
+                "action": "append"
+              },
+              "controllers/grokController.js": {
+                "action": "create"
+              },
+              "index.js": {
+                "action": "prepend"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "routes/grokRoutes.js": {
+                "action": "create"
+              },
+              "utils/grok.js": {
+                "action": "create"
+              }
+            },
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "controllers/grokController.ts": {
+                "action": "create"
+              },
+              "index.ts": {
+                "action": "prepend"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "routes/grokRoutes.ts": {
+                "action": "create"
+              },
+              "utils/grok.ts": {
+                "action": "create"
+              }
+            }
+          },
+          "nestjs": {
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "src/grok/grok.controller.ts": {
+                "action": "create"
+              },
+              "src/grok/grok.module.ts": {
+                "action": "create"
+              },
+              "src/grok/grok.service.ts": {
+                "action": "create"
+              }
+            }
+          },
+          "nextjs": {
+            "javascript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/api/grok/route.js": {
+                "action": "create"
+              },
+              "lib/grok.js": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            },
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/api/grok/route.ts": {
+                "action": "create"
+              },
+              "lib/grok.ts": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            }
+          },
+          "remixjs": {
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/routes/api/grok.ts": {
+                "action": "create"
+              },
+              "app/utils/grok.ts": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            }
+          }
+        },
+        "open-router": {
+          "expressjs": {
+            "javascript": {
+              ".env": {
+                "action": "append"
+              },
+              "controllers/openrouterController.js": {
+                "action": "create"
+              },
+              "index.js": {
+                "action": "prepend"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "routes/openRouterRoutes.js": {
+                "action": "create"
+              },
+              "utils/openrouter.js": {
+                "action": "create"
+              }
+            },
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "controllers/openrouterController.ts": {
+                "action": "create"
+              },
+              "index.ts": {
+                "action": "prepend"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "routes/openRouterRoutes.ts": {
+                "action": "create"
+              },
+              "utils/openrouter.ts": {
+                "action": "create"
+              }
+            }
+          },
+          "nestjs": {
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "src/openrouter/openrouter.controller.ts": {
+                "action": "create"
+              },
+              "src/openrouter/openrouter.module.ts": {
+                "action": "create"
+              },
+              "src/openrouter/openrouter.service.ts": {
+                "action": "create"
+              }
+            }
+          },
+          "nextjs": {
+            "javascript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/api/openrouter/route.js": {
+                "action": "create"
+              },
+              "lib/openrouter.js": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            },
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/api/openrouter/route.ts": {
+                "action": "create"
+              },
+              "lib/openrouter.ts": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            }
+          },
+          "remixjs": {
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/routes/api/openrouter.ts": {
+                "action": "create"
+              },
+              "app/utils/openrouter.ts": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            }
+          }
+        },
+        "openai": {
+          "expressjs": {
+            "javascript": {
+              ".env": {
+                "action": "append"
+              },
+              "controllers/openaiController.js": {
+                "action": "create"
+              },
+              "index.js": {
+                "action": "prepend"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "routes/openAiRoutes.js": {
+                "action": "create"
+              },
+              "utils/openai.js": {
+                "action": "create"
+              }
+            },
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "controllers/openaiController.ts": {
+                "action": "create"
+              },
+              "index.ts": {
+                "action": "prepend"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "routes/openAiRoutes.ts": {
+                "action": "create"
+              },
+              "utils/openai.ts": {
+                "action": "create"
+              }
+            }
+          },
+          "nestjs": {
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "src/openai/openai.controller.ts": {
+                "action": "create"
+              },
+              "src/openai/openai.module.ts": {
+                "action": "create"
+              },
+              "src/openai/openai.service.ts": {
+                "action": "create"
+              }
+            }
+          },
+          "nextjs": {
+            "javascript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/api/openai/route.js": {
+                "action": "create"
+              },
+              "lib/openai.js": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            },
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/api/openai/route.ts": {
+                "action": "create"
+              },
+              "lib/openai.ts": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            }
+          },
+          "remixjs": {
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/routes/api/openai.ts": {
+                "action": "create"
+              },
+              "app/utils/openai.ts": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            }
+          }
+        }
+      }

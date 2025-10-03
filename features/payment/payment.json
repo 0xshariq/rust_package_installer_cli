@@ -1,0 +1,347 @@
+{
+        "paypal": {
+          "expressjs": {
+            "javascript": {
+              ".env": {
+                "action": "append"
+              },
+              "controllers/paypalControllers.js": {
+                "action": "create"
+              },
+              "index.js": {
+                "action": "prepend"
+              },
+              "routes/paypalRoutes.js": {
+                "action": "create"
+              },
+              "utils/paypal.js": {
+                "action": "create"
+              }
+            },
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "controllers/paypalControllers.ts": {
+                "action": "create"
+              },
+              "index.ts": {
+                "action": "prepend"
+              },
+              "routes/paypalRoutes.ts": {
+                "action": "create"
+              },
+              "utils/paypal.ts": {
+                "action": "create"
+              }
+            }
+          },
+          "nestjs": {
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "src/paypal.controller.ts": {
+                "action": "create"
+              },
+              "src/paypal.service.ts": {
+                "action": "create"
+              }
+            }
+          },
+          "nextjs": {
+            "javascript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/api/paypal/capture-payment/route.js": {
+                "action": "create"
+              },
+              "app/api/paypal/create-payment/route.js": {
+                "action": "create"
+              },
+              "app/api/paypal/refund/route.ts": {
+                "action": "create"
+              },
+              "app/payment-checkout/page.tsx": {
+                "action": "create"
+              }
+            },
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/api/paypal/capture-payment/route.ts": {
+                "action": "create"
+              },
+              "app/api/paypal/create-payment/route.ts": {
+                "action": "create"
+              },
+              "app/api/paypal/refund/route.ts": {
+                "action": "create"
+              },
+              "app/payment-checkout/page.tsx": {
+                "action": "create"
+              }
+            }
+          },
+          "remixjs": {
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/routes/api/paypal.ts": {
+                "action": "create"
+              },
+              "app/routes/checkout.tsx": {
+                "action": "create"
+              }
+            }
+          }
+        },
+        "razorpay": {
+          "expressjs": {
+            "javascript": {
+              ".env": {
+                "action": "append"
+              },
+              "controllers/payment.js": {
+                "action": "create"
+              },
+              "index.js": {
+                "action": "prepend"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "routes/payment.js": {
+                "action": "create"
+              }
+            },
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "controllers/payment.ts": {
+                "action": "create"
+              },
+              "index.ts": {
+                "action": "prepend"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "routes/payment.ts": {
+                "action": "create"
+              }
+            }
+          },
+          "nestjs": {
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "src/payment.controller.ts": {
+                "action": "create"
+              }
+            }
+          },
+          "nextjs": {
+            "javascript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/api/payment/route.js": {
+                "action": "create"
+              },
+              "app/api/refund/route.js": {
+                "action": "create"
+              },
+              "app/payment-checkout/page.jsx": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            },
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/api/payment/route.ts": {
+                "action": "create"
+              },
+              "app/api/refund/route.ts": {
+                "action": "create"
+              },
+              "app/payment-checkout/page.tsx": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            }
+          },
+          "remixjs": {
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/routes/api.orders.ts": {
+                "action": "create"
+              },
+              "app/routes/api.refunds.ts": {
+                "action": "create"
+              },
+              "app/routes/checkout.tsx": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            }
+          }
+        },
+        "stripe": {
+          "expressjs": {
+            "javascript": {
+              ".env": {
+                "action": "append"
+              },
+              "controllers/stripeController.js": {
+                "action": "create"
+              },
+              "index.js": {
+                "action": "prepend"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "routes/stripeRoutes.js": {
+                "action": "create"
+              }
+            },
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "controllers/stripeControllers.ts": {
+                "action": "create"
+              },
+              "index.ts": {
+                "action": "prepend"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "routes/stripeRoutes.ts": {
+                "action": "create"
+              },
+              "utils/stripe.ts": {
+                "action": "create"
+              }
+            }
+          },
+          "nestjs": {
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "src/app.module.ts": {
+                "action": "prepend"
+              },
+              "src/stripe/stripe.controller.ts": {
+                "action": "create"
+              },
+              "src/stripe/stripe.module.ts": {
+                "action": "create"
+              },
+              "src/stripe/stripe.service.ts": {
+                "action": "create"
+              }
+            }
+          },
+          "nextjs": {
+            "javascript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/api/stripe/create-payment-intent/route.js": {
+                "action": "create"
+              },
+              "app/api/stripe/refund/route.js": {
+                "action": "create"
+              },
+              "app/payment-checkout/page.jsx": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            },
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/api/stripe/create-payment-intent/route.ts": {
+                "action": "create"
+              },
+              "app/api/stripe/refund/route.ts": {
+                "action": "create"
+              },
+              "app/payment-checkout/page.tsx": {
+                "action": "create"
+              },
+              "lib/stripe.ts": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            }
+          },
+          "remixjs": {
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/routes/checkout.tsx": {
+                "action": "create"
+              },
+              "app/routes/refund.tsx": {
+                "action": "create"
+              },
+              "app/utils/stripe.server.ts": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            }
+          },
+          "vuejs": {
+            "javascript": {
+              "package.json": {
+                "action": "install"
+              },
+              "src/components/VueStripe.vue": {
+                "action": "create"
+              }
+            },
+            "typescript": {
+              "package.json": {
+                "action": "install"
+              },
+              "src/components/VueStripe.vue": {
+                "action": "create"
+              }
+            }
+          }
+        }
+      }
