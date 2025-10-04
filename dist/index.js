@@ -19,6 +19,7 @@ import { cleanCommand, showCleanHelp } from './commands/clean.js';
 import { cacheCommand, showCacheHelp } from './commands/cache.js';
 import { environmentCommand, showEnvironmentHelp } from './commands/env.js';
 import { doctorCommand, showDoctorHelp } from './commands/doctor.js';
+import { emailCommand, showEmailHelp } from './commands/email.js';
 // Import utilities
 import { initializeCache } from './utils/cacheManager.js';
 import { displayBanner, displayCommandBanner } from './utils/banner.js';
@@ -324,6 +325,31 @@ program
         handleCommandError('cache', error);
     }
 });
+// EMAIL COMMAND - Contact developer with feedback
+program
+    .command('email')
+    .description(chalk.hex('#00d2d3')('📧 ') + chalk.hex('#4facfe')('Contact developer with feedback, bug reports, and feature requests'))
+    .argument('[category]', chalk.hex('#95afc0')('Feedback category (bug, feature, template, question, improvement, docs)'))
+    .option('-h, --help', chalk.hex('#95afc0')('Display help for this command'))
+    .option('-l, --list', chalk.hex('#95afc0')('List all available email categories'))
+    .option('--install', chalk.hex('#95afc0')('Show Email MCP Server installation instructions'))
+    .option('--setup', chalk.hex('#95afc0')('Show email configuration setup guide'))
+    .option('--status', chalk.hex('#95afc0')('Check email system status and availability'))
+    .option('--test', chalk.hex('#95afc0')('Send a test email to verify functionality'))
+    .option('--commands', chalk.hex('#95afc0')('Show all available Email MCP Server commands'))
+    .option('--dev', chalk.hex('#95afc0')('Show development setup information and troubleshooting'))
+    .option('--quick', chalk.hex('#95afc0')('Quick feedback mode with minimal prompts'))
+    .on('--help', () => {
+    showEmailHelp();
+})
+    .action(async (category, options) => {
+    try {
+        await emailCommand(category, options);
+    }
+    catch (error) {
+        handleCommandError('email', error);
+    }
+});
 // DEPLOY COMMAND - Future deployment features
 program
     .command('deploy')
@@ -360,6 +386,7 @@ program.on('--help', () => {
         chalk.hex('#95afc0')('  ') + piGradient('pi') + ' ' + addGradient('add') + chalk.hex('#95afc0')(' docker             # Add Docker configuration') + '\n' +
         chalk.hex('#95afc0')('  ') + piGradient('pi') + ' ' + commandGradient('check') + chalk.hex('#95afc0')('                   # Check package versions') + '\n' +
         chalk.hex('#95afc0')('  ') + piGradient('pi') + ' ' + commandGradient('check') + chalk.hex('#95afc0')(' react             # Check specific package') + '\n' +
+        chalk.hex('#95afc0')('  ') + piGradient('pi') + ' ' + commandGradient('email') + chalk.hex('#95afc0')('                   # Contact developer with feedback') + '\n' +
         chalk.hex('#ff6b6b')('🌍 REPOSITORY & DEPLOYMENT') + '\n' +
         chalk.hex('#95afc0')('  ') + piGradient('pi') + ' ' + commandGradient('clone') + chalk.hex('#95afc0')('                   # Clone repositories interactively') + '\n' +
         chalk.hex('#95afc0')('  ') + piGradient('pi') + ' ' + commandGradient('clone') + chalk.hex('#95afc0')(' facebook/react    # Clone popular repositories') + '\n' +
@@ -395,7 +422,8 @@ if (process.argv.length === 2) {
         chalk.hex('#10ac84')('  ') + piGradient('pi') + ' ' + gradient(['#10ac84', '#00d2d3'])('create') + chalk.hex('#95afc0')('           # Create new project (React, Next.js, Vue, etc.)') + '\n' +
         chalk.hex('#9c88ff')('  ') + piGradient('pi') + ' ' + gradient(['#9c88ff', '#667eea'])('analyze') + chalk.hex('#95afc0')('          # Show project analytics dashboard') + '\n' +
         chalk.hex('#ff6b6b')('  ') + piGradient('pi') + ' ' + gradient(['#ff6b6b', '#ff9a9e'])('update') + chalk.hex('#95afc0')('           # Update packages to latest versions') + '\n' +
-        chalk.hex('#00d2d3')('  ') + piGradient('pi') + ' ' + gradient(['#00d2d3', '#0084ff'])('clone') + chalk.hex('#95afc0')(' user/repo   # Clone and setup GitHub repositories') + '\n\n' +
+        chalk.hex('#00d2d3')('  ') + piGradient('pi') + ' ' + gradient(['#00d2d3', '#0084ff'])('clone') + chalk.hex('#95afc0')(' user/repo   # Clone and setup GitHub repositories') + '\n' +
+        chalk.hex('#00d2d3')('  ') + piGradient('pi') + ' ' + gradient(['#00d2d3', '#4facfe'])('email') + chalk.hex('#95afc0')('            # Contact developer with feedback') + '\n\n' +
         chalk.hex('#ffa502')('Need help? Try these:') + '\n\n' +
         chalk.hex('#ff6b6b')('  ') + piGradient('pi') + ' ' + chalk.hex('#ff6b6b')('--help') + chalk.hex('#95afc0')('           # See all available commands') + '\n' +
         chalk.hex('#95afc0')('  ') + piGradient('pi') + ' ' + chalk.hex('#95afc0')('command --help') + chalk.hex('#95afc0')('   # Get detailed help for any command') + '\n\n' +

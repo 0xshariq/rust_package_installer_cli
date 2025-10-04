@@ -155,7 +155,8 @@ function adjustNextjsSrcFilePath(filePath, hasSrcFolder, projectPath) {
         '.env', '.env.local', '.env.example', '.env.development', '.env.production',
         'package.json', 'next.config.js', 'next.config.mjs', 'next.config.ts',
         'tailwind.config.js', 'tailwind.config.ts', 'postcss.config.js', 'postcss.config.ts',
-        'middleware.ts', 'middleware.js', 'tsconfig.json', 'jsconfig.json'
+        'tsconfig.json', 'jsconfig.json', 'README.md', '.gitignore',
+        'docker-compose.yml', 'Dockerfile', 'yarn.lock', 'pnpm-lock.yaml', 'package-lock.json'
     ];
     const fileName = path.basename(filePath);
     // Always put public/ files in root public/
@@ -170,16 +171,8 @@ function adjustNextjsSrcFilePath(filePath, hasSrcFolder, projectPath) {
     if (filePath.startsWith('src/')) {
         return path.join(projectPath, filePath);
     }
-    // For app/pages/components/lib/utils/hooks/styles/types, put in src/
-    const srcDirs = ['app', 'pages', 'components', 'lib', 'utils', 'styles', 'hooks', 'types'];
-    if (srcDirs.some(dir => filePath.startsWith(dir + '/'))) {
-        return path.join(projectPath, 'src', filePath);
-    }
-    // For .ts/.tsx/.js/.jsx files not in config, put in src/
-    if (fileName.match(/\.(ts|tsx|js|jsx)$/) && !fileName.includes('config')) {
-        return path.join(projectPath, 'src', filePath);
-    }
-    // Default: put in src/
+    // Everything else goes in src/ folder for Next.js projects with src structure
+    // This includes: app/, pages/, components/, lib/, utils/, styles/, hooks/, types/, middleware.ts, etc.
     return path.join(projectPath, 'src', filePath);
 }
 /**
