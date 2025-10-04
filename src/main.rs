@@ -13,14 +13,15 @@ const LOCAL_CLI_DIR: &str = "node_modules/@0xshariq/package-installer";
 fn main() {
     let args: Vec<String> = env::args().collect();
     
-    // Check if the binary name contains "pi" or if first argument is "pi"
+    // Check if the binary name contains "package-installer" or "pi" or if first argument is "pi"
     let binary_name = &args[0];
-    let should_run_cli = binary_name.contains("pi") || 
+    let should_run_cli = binary_name.contains("package-installer") || 
+                        binary_name.contains("pi") || 
                         (args.len() > 1 && args[1] == "pi");
     
     if should_run_cli {
         // Get CLI arguments
-        let cli_args = if binary_name.contains("pi") {
+        let cli_args = if binary_name.contains("package-installer") || binary_name.contains("pi") {
             args.iter().skip(1).cloned().collect::<Vec<String>>()
         } else {
             args.iter().skip(2).cloned().collect::<Vec<String>>()
