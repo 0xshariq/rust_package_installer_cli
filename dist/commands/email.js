@@ -7,7 +7,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import { createStandardHelp } from '../utils/helpFormatter.js';
 import { displayCommandBanner } from '../utils/banner.js';
-import { generateEmailTemplate, generateTestEmailTemplate, collectBugReportData, collectFeatureRequestData, collectTemplateRequestData, collectQuestionData, collectImprovementData, collectDocsData, collectContactInfo, collectQuickFeedback } from '../email-templates/index.js';
+import { generateEmailTemplate, generateTestEmailTemplate, collectBugReportData, collectFeatureRequestData, collectTemplateRequestData, collectQuestionData, collectImprovementData, collectDocsData, collectCustomMessageData, collectContactInfo, collectQuickFeedback } from '../email-templates/index.js';
 const EMAIL_CATEGORIES = [
     {
         name: '🐛 Bug Report',
@@ -50,6 +50,13 @@ const EMAIL_CATEGORIES = [
         description: 'Report issues with documentation',
         emoji: '📖',
         template: 'docs-issue'
+    },
+    {
+        name: '✉️ Custom Message',
+        value: 'custom',
+        description: 'Send a custom formatted message',
+        emoji: '✉️',
+        template: 'custom-message'
     }
 ];
 /**
@@ -1053,6 +1060,9 @@ export async function emailCommand(category, options = {}) {
                     break;
                 case 'docs':
                     categoryData = await collectDocsData();
+                    break;
+                case 'custom':
+                    categoryData = await collectCustomMessageData();
                     break;
                 default:
                     categoryData = await collectQuestionData(); // Fallback

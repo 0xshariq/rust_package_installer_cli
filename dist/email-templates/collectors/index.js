@@ -5,4 +5,5 @@ export { collectTemplateRequestData } from './templateRequest.js';
 export { collectQuestionData } from './question.js';
 export { collectImprovementData } from './improvement.js';
 export { collectDocsData } from './docs.js';
+export { collectCustomMessageData } from './customMessage.js';
 export { collectContactInfo, collectQuickFeedback } from './common.js';
