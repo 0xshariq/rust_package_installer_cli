@@ -1,6 +1,5 @@
 use std::env;
-use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::process::Command;
 
 const LOCAL_CLI_DIR: &str = "node_modules/@0xshariq/package-installer";
@@ -42,49 +41,7 @@ fn main() {
     }
 }
 
-fn ensure_cli_available() -> Result<PathBuf, Box<dyn std::error::Error>> {
-    // First, check for local installation (npm/yarn/pnpm installed version)
-    if let Ok(local_cli) = check_local_installation() {
-        println!("✅ Using locally installed CLI from node_modules");
-        return Ok(local_cli);
-    }
-    
-    // If no local installation, use cached/global installation
-    let cache_dir = get_cache_dir()?;
-    let cli_path = cache_dir.join("dist").join("index.js");
-    
-    // Check if CLI already exists in cache
-    if cli_path.exists() {
-        // Check if dependencies are installed
-        if !dependencies_installed(&cache_dir) {
-            println!("🔍 CLI found but dependencies not installed.");
-            println!("🚀 Attempting to install dependencies automatically...");
-            
-            match install_dependencies(&cache_dir) {
-                Ok(_) => {
-                    println!("✅ Ready to use!");
-                }
-                Err(e) => {
-                    println!("⚠️  Automatic installation failed: {}", e);
-                    println!("💡 You can still use the CLI after manually installing dependencies.");
-                }
-            }
-        } else {
-            println!("✅ Using cached CLI with dependencies installed");
-        }
-        return Ok(cli_path);
-    }
-    
-    println!("🔍 CLI not found in cache, downloading from GitHub...");
-    download_cli(&cache_dir)?;
-    
-    if cli_path.exists() {
-        println!("📦 CLI downloaded successfully!");
-        Ok(cli_path)
-    } else {
-        Err("Failed to find CLI after download".into())
-    }
-}
+
 
 fn find_and_run_cli(cli_args: &[String]) -> Result<i32, Box<dyn std::error::Error>> {
     // Try different CLI options in order of preference
@@ -153,24 +110,44 @@ fn try_bundled_standalone(cli_args: &[String]) -> Result<i32, Box<dyn std::error
     let exe_path = env::current_exe()?;
     let exe_dir = exe_path.parent().ok_or("Cannot determine executable directory")?;
     
-    // Check for bundled standalone version relative to the binary
-    let standalone_path = exe_dir.join("bundle").join("standalone").join("index.js");
+    // Check for bundled pkg-ready version first (more compatible)
+    let pkg_ready_path = exe_dir.join("bundle").join("pkg-ready").join("index.js");
+    if pkg_ready_path.exists() {
+        println!("✅ Using bundled pkg-ready CLI");
+        if let Ok(exit_code) = run_node_esm_cli(&pkg_ready_path, cli_args) {
+            return Ok(exit_code);
+        }
+    }
     
+    // Check for bundled standalone version
+    let standalone_path = exe_dir.join("bundle").join("standalone").join("index.js");
     if standalone_path.exists() {
         println!("✅ Using bundled standalone CLI");
-        return run_node_cli(&standalone_path, cli_args);
+        if let Ok(exit_code) = run_node_esm_cli(&standalone_path, cli_args) {
+            return Ok(exit_code);
+        }
     }
     
     // Also check in the current working directory (for development)
     let current_dir = env::current_dir()?;
-    let standalone_dev_path = current_dir.join("bundle").join("standalone").join("index.js");
     
-    if standalone_dev_path.exists() {
-        println!("✅ Using bundled standalone CLI (development)");
-        return run_node_cli(&standalone_dev_path, cli_args);
+    let pkg_ready_dev_path = current_dir.join("bundle").join("pkg-ready").join("index.js");
+    if pkg_ready_dev_path.exists() {
+        println!("✅ Using bundled pkg-ready CLI (development)");
+        if let Ok(exit_code) = run_node_esm_cli(&pkg_ready_dev_path, cli_args) {
+            return Ok(exit_code);
+        }
     }
     
-    Err("Bundled standalone CLI not found".into())
+    let standalone_dev_path = current_dir.join("bundle").join("standalone").join("index.js");
+    if standalone_dev_path.exists() {
+        println!("✅ Using bundled standalone CLI (development)");
+        if let Ok(exit_code) = run_node_esm_cli(&standalone_dev_path, cli_args) {
+            return Ok(exit_code);
+        }
+    }
+    
+    Err("Bundled standalone CLI not found or failed to run".into())
 }
 
 fn try_bundled_executable(cli_args: &[String]) -> Result<i32, Box<dyn std::error::Error>> {
@@ -192,7 +169,9 @@ fn try_bundled_executable(cli_args: &[String]) -> Result<i32, Box<dyn std::error
     
     if bundled_exe_path.exists() {
         println!("✅ Using bundled native executable");
-        return run_native_cli(&bundled_exe_path, cli_args);
+        if let Ok(exit_code) = run_native_cli(&bundled_exe_path, cli_args) {
+            return Ok(exit_code);
+        }
     }
     
     // Also check in the current working directory (for development)
@@ -201,10 +180,12 @@ fn try_bundled_executable(cli_args: &[String]) -> Result<i32, Box<dyn std::error
     
     if bundled_exe_dev_path.exists() {
         println!("✅ Using bundled native executable (development)");
-        return run_native_cli(&bundled_exe_dev_path, cli_args);
+        if let Ok(exit_code) = run_native_cli(&bundled_exe_dev_path, cli_args) {
+            return Ok(exit_code);
+        }
     }
     
-    Err("Bundled executable not found".into())
+    Err("Bundled executable not found or failed to run".into())
 }
 
 fn run_node_cli(cli_path: &Path, cli_args: &[String]) -> Result<i32, Box<dyn std::error::Error>> {
@@ -217,6 +198,21 @@ fn run_node_cli(cli_path: &Path, cli_args: &[String]) -> Result<i32, Box<dyn std
     Ok(status.code().unwrap_or(1))
 }
 
+fn run_node_esm_cli(cli_path: &Path, cli_args: &[String]) -> Result<i32, Box<dyn std::error::Error>> {
+    // Just try running it normally - the bundled files should handle ESM/CommonJS internally
+    let status = Command::new("node")
+        .arg(cli_path)
+        .args(cli_args)
+        .status()
+        .map_err(|e| format!("Failed to run Node.js CLI: {}", e))?;
+    
+    if status.success() {
+        Ok(0)
+    } else {
+        Err(format!("CLI exited with non-zero status: {}", status.code().unwrap_or(1)).into())
+    }
+}
+
 fn run_native_cli(exe_path: &Path, cli_args: &[String]) -> Result<i32, Box<dyn std::error::Error>> {
     let status = Command::new(exe_path)
         .args(cli_args)
@@ -226,16 +222,7 @@ fn run_native_cli(exe_path: &Path, cli_args: &[String]) -> Result<i32, Box<dyn s
     Ok(status.code().unwrap_or(1))
 }
 
-fn get_cache_dir() -> Result<PathBuf, Box<dyn std::error::Error>> {
-    let cache_base = cache_dir().ok_or("Could not determine cache directory")?;
-    let cache_path = cache_base.join(CACHE_DIR_NAME);
-    
-    if !cache_path.exists() {
-        fs::create_dir_all(&cache_path)?;
-    }
-    
-    Ok(cache_path)
-}
+
 
 fn print_usage_instructions() {
     println!("\n📋 CLI NOT FOUND:");

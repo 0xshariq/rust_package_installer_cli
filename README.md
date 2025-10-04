@@ -11,22 +11,10 @@ A **cross-platform, interactive CLI** to scaffold modern web application templat
 
 ## 🚀 Installation Options
 
-### Option 1: Global Installation via Cargo (Recommended)
+### Option 1: Local NPM Installation (Recommended)
 
 ```bash
-cargo install package-installer-cli
-```
-
-**Benefits:**
-- ✅ **Automatic Dependency Management**: Installs Node.js dependencies automatically
-- ✅ **Smart Installation Detection**: Uses local npm packages when available
-- ✅ **Cross-Platform**: Works on Windows, macOS, and Linux
-- ✅ **No Manual Setup**: Everything works out of the box
-
-### Option 2: Local NPM Installation
-
-```bash
-# Using npm
+# Using npm (recommended)
 npm install @0xshariq/package-installer
 
 # Using yarn
@@ -36,15 +24,32 @@ yarn add @0xshariq/package-installer
 pnpm add @0xshariq/package-installer
 ```
 
+**Benefits:**
+- ✅ **Always Works**: No compatibility issues with dependencies
+- ✅ **Latest Version**: Gets the most up-to-date CLI directly from npm
+- ✅ **Project-Scoped**: Keeps CLI version consistent with your project
+- ✅ **Full Feature Set**: Access to all CLI features without limitations
+
+### Option 2: Global Installation via Cargo
+
+```bash
+cargo install package-installer-cli
+```
+
+**Benefits:**
+- ✅ **Smart Detection**: Automatically finds local npm installations
+- ✅ **Bundled Fallback**: Includes bundled CLI for offline use
+- ✅ **Cross-Platform**: Works on Windows, macOS, and Linux
+- ✅ **Single Command**: Install once, use anywhere
+
 ## 🎯 How It Works
 
 The Rust wrapper intelligently manages the TypeScript CLI:
 
-1. **🔍 Local Detection**: First checks for npm/yarn/pnpm installed version in your project
-2. **📦 Auto Download**: Downloads the latest CLI from GitHub if not found locally
-3. **⚡ Dependency Installation**: Automatically installs required Node.js dependencies
-4. **💾 Smart Caching**: Caches CLI and dependencies for faster subsequent runs
-5. **🚀 Seamless Execution**: Runs the appropriate version with your commands
+1. **🔍 Local Priority**: First checks for local npm/yarn/pnpm installations in your project
+2. **📦 Bundled Fallback**: Uses bundled CLI version if no local installation found
+3. **🚀 Seamless Execution**: Automatically runs the best available version
+4. **⚡ Zero Configuration**: No manual setup or dependency installation required
 
 ### Prerequisites
 
@@ -108,49 +113,46 @@ npx pi create my-app
 }
 ```
 
-## 🛠️ Dependency Management
+## 🛠️ How to Use
 
-### Automatic Installation ✨
-
-The CLI automatically handles dependencies on first run:
+### With Local Installation (Recommended)
 
 ```bash
-# First run - automatically installs dependencies
-pi create my-app
-# ✅ CLI found but dependencies not installed.
-# 🚀 Attempting to install dependencies automatically...
-# ✅ Dependencies installed successfully!
-```
-
-### Troubleshooting Dependencies
-
-If automatic installation fails, you have two options:
-
-#### Option 1: Local Installation (Recommended)
-Install the CLI locally with all dependencies:
-
-```bash
+# Install locally in your project
 npm install @0xshariq/package-installer
+
+# Use with npx
 npx pi create my-app
+
+# Or add to package.json scripts
+{
+  "scripts": {
+    "create": "pi create"
+  }
+}
 ```
 
-#### Option 2: Manual Cache Setup
-Fix the global installation:
+### With Global Cargo Installation
 
 ```bash
-# Navigate to cache directory (shown in error message)
-cd ~/.cache/.package-installer-cli  # Linux/macOS
-# or
-cd %LOCALAPPDATA%\.package-installer-cli  # Windows
+# Install globally
+cargo install package-installer-cli
 
-# Install dependencies manually
-npm install --production
-# or yarn install --production  
-# or pnpm install --production
-
-# Try again
+# Use directly (will find local installation if available)
 pi create my-app
+
+# Or use the binary name directly
+package-installer-cli create my-app
 ```
+
+### Priority Order
+
+The Rust wrapper checks for CLI in this order:
+
+1. **Local npm packages** (./node_modules/@0xshariq/package-installer)
+2. **Parent directory npm packages** (up to 5 levels)
+3. **Bundled standalone version** (bundle/pkg-ready/index.js)
+4. **Bundled native executable** (bundle/executables/package-installer-[platform])
 
 ## 📚 Documentation
 
