@@ -1,0 +1,7 @@
+{
+    "dependencies": {
+        "@aws-sdk/client-personalize": "^3.883.0",
+        "@aws-sdk/client-personalize-events": "^3.883.0",
+        "@aws-sdk/client-personalize-runtime": "^3.883.0"
+    }
+}

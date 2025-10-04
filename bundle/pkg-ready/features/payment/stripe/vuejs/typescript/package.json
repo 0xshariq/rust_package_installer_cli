@@ -1,0 +1,5 @@
+{
+    "dependencies": {
+        "@vue-stripe/vue-stripe": "^4.5.0"
+    }
+}

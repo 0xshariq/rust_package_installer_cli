@@ -1,0 +1,7 @@
+{
+    "dependencies": {
+        "@aws-sdk/client-redshift": "^3.883.0",
+        "@aws-sdk/client-redshift-data": "^3.883.0",
+        "@aws-sdk/client-redshift-serverless": "^3.883.0"
+    }
+}

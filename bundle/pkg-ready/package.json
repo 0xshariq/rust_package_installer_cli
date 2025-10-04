@@ -1,0 +1,10 @@
+{
+  "name": "@0xshariq/package-installer",
+  "version": "3.9.0",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "pi": "index.js",
+    "package-installer": "index.js"
+  }
+}

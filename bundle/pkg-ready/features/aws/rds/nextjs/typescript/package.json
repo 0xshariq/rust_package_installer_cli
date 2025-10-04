@@ -1,0 +1,8 @@
+{
+    "dependencies": {
+        "@aws-sdk/client-rds": "^3.883.0",
+        "@aws-sdk/client-rds-data": "^3.883.0",
+        "@aws-sdk/middleware-sdk-rds": "^3.882.0",
+        "@aws-sdk/client-rds-signer": "^3.883.0"
+    }
+}

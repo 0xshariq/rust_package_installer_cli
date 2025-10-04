@@ -1,0 +1,61 @@
+{
+        "angularjs": {
+          ".gitignore": {
+            "action": "create"
+          }
+        },
+        "django": {
+            ".gitignore": {
+            "action": "create"
+          }
+        },
+        "flask": {
+            ".gitignore": {
+            "action": "create"
+          }
+        },
+        "go": {
+          ".gitignore": {
+            "action": "create"
+          }
+        },
+        "nestjs": {
+          ".gitignore": {
+            "action": "create"
+          }
+        },
+        "nextjs": {
+          ".gitignore": {
+            "action": "create"
+          }
+        },
+        "nuxtjs": {
+            ".gitignore": {
+            "action": "create"
+          }
+        },
+        "python": {
+          ".gitignore": {
+            "action": "create"
+          }
+        },
+        "react-native": {
+            ".gitignore": {
+            "action": "create"
+          }
+        },
+        "ruby": {
+            ".gitignore": {
+            "action": "create"
+          }
+        },
+        "rust": {
+          ".gitignore": {
+            "action": "create"
+          }
+        },
+        "vuejs": {
+        ".gitignore": {
+            "action": "create"
+          }}
+      }

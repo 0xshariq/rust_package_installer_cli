@@ -1,0 +1,8 @@
+{
+    "dependencies": {
+        "tailwindcss": "^4.1.12",
+        "daisyui" : "^5.0.50",
+        "@tailwindcss/postcss": "^4.1.12",
+        "postcss": "^8.5.6"
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "dependencies": {
+        "@aws-sdk/client-route-53": "^3.883.0",
+        "@aws-sdk/client-route53-recovery-readiness": "^3.883.0",
+        "@aws-sdk/client-route53resolver": "^3.883.0",
+        "@aws-sdk/client-route53-recovery-cluster": "^3.883.0",
+        "@aws-sdk/client-route53-recovery-control-config": "^3.883.0",
+        "@aws-sdk/middleware-sdk-route53": "^3.873.0"
+    }
+}

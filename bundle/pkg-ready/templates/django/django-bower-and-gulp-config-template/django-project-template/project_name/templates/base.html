@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>{% block title %} {% endblock title %}</title>
+    <link rel="icon" type="image/x-icon" href="{{STATIC_URL}}img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- build:css ../static/build/css/lib.css -->
+    <!-- bower:css -->
+    <!-- endbower -->
+    <!-- endbuild -->
+
+    <!-- build:css ../static/build/css/app.css -->
+    <!-- inject:css -->
+    <!-- endinject -->
+    <!-- endbuild -->
+</head>
+<body>
+    <header>
+    
+    </header>
+    
+    {% block content %}
+    {% endblock content %}
+    
+    <footer>
+    
+    </footer>
+    <!-- build:js ../static/build/js/lib.js -->
+    <!-- bower:js -->
+    <!-- endbower -->
+    <!-- endbuild -->
+
+    <!-- build:js ../static/build/js/app.js -->
+    <!-- inject:js -->
+    <!-- endinject -->
+    <!-- endbuild -->
+</body>
+</html>

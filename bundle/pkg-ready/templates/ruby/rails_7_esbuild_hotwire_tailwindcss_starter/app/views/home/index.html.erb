@@ -1,0 +1,8 @@
+<div data-controller="home">
+  <button class="text-2xl font-extrabold mx-20 my-20" data-home-target="hello-button" data-action="click->home#run">
+    Click Me
+  </button>
+
+  <%= turbo_frame_tag "content" do %>
+  <% end %>
+</div>

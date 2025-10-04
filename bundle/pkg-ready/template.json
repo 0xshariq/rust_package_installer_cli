@@ -1,0 +1,158 @@
+{
+  "frameworks": {
+    "angularjs": {
+      "type": "frontend",
+      "description": "Platform for building mobile and desktop web applications",
+      "languages": ["typescript"],
+      "ui": ["material-ui"],
+      "options": ["tailwind"],
+      "templates": [
+        "material-ui-no-tailwind-template",
+        "material-ui-tailwind-template",
+        "no-material-no-tailwind-template"
+      ]
+    },
+    "django": {
+      "type": "backend",
+      "description": "High-level Python web framework that encourages rapid development and clean, pragmatic design",
+      "languages": ["python"],
+      "templates": [
+        "django-bower-and-gulp-config-template",
+        "django-full-stack-template",
+        "django-inertia-svelte-template",
+        "djangoTemplate"
+      ]
+    },
+    "expressjs": {
+      "type": "backend",
+      "description": "Fast, unopinionated web framework for Node.js",
+      "languages": ["javascript", "typescript"],
+      "templates": ["advance-expressjs-template", "basic-expressjs-template"]
+    },
+    "flask": {
+      "type": "backend",
+      "description": "Lightweight WSGI web application framework in Python",
+      "languages": ["python"],
+      "templates": [
+        "flask-cookiecutter-advance-template",
+        "flask-project-template",
+        "flask-template-bootstrap",
+        "flask-template-with-useful-plugins"
+      ]
+    },
+    "go": {
+      "type": "backend",
+      "description": "Statically typed, compiled language designed for simplicity and performance",
+      "languages": ["go"],
+      "templates": ["golang-boilerplate"]
+    },
+    "nestjs": {
+      "type": "backend",
+      "description": "Progressive Node.js framework for building efficient server-side applications",
+      "languages": ["typescript"],
+      "templates": ["template"]
+    },
+    "nextjs": {
+      "type": "fullstack",
+      "description": "Full-stack React framework with server-side rendering",
+      "languages": ["javascript", "typescript"],
+      "ui": ["shadcn"],
+      "options": ["src", "tailwind"],
+      "templates": [
+        "no-src-no-tailwind-template",
+        "no-src-shadcn-tailwind-template",
+        "no-src-tailwind-template",
+        "src-no-tailwind-template",
+        "src-shadcn-tailwind-template",
+        "src-tailwind-template"
+      ]
+    },
+    "nuxtjs": {
+      "type": "frontend",
+      "description": "Progressive JavaScript framework for building modern web applications",
+      "languages": ["javascript", "typescript"],
+      "ui": ["shadcn"],
+      "options": ["tailwind"],
+      "templates": [
+        "shadcn-tailwind-template",
+        "no-shadcn-no-tailwind-template",
+        "no-shadcn-tailwind-template"
+      ]
+    },
+    "react-native": {
+      "type": "mobile",
+      "description": "Framework for building native apps using React",
+      "languages": ["javascript", "typescript"],
+      "templates": [
+        "template"
+      ]
+    },
+    "reactjs": {
+      "type": "frontend",
+      "description": "Modern React library for building user interfaces",
+      "languages": ["javascript", "typescript"],
+      "ui": ["shadcn"],
+      "options": ["src", "tailwind"],
+      "bundlers": ["vite"],
+      "templates": [
+        "no-shadcn-no-tailwind-template",
+        "no-shadcn-tailwind-template",
+        "shadcn-tailwind-template"
+      ]
+    },
+    "reactjs+expressjs+shadcn": {
+      "type": "fullstack",
+      "description": "Complete full-stack solution with React frontend, Express backend, and Shadcn UI",
+      "languages": ["javascript", "typescript"],
+      "templates": [
+        "react-basic-express-shadcn-template",
+        "react-advance-express-shadcn-template"
+      ]
+    },
+    "reactjs+nestjs+shadcn": {
+      "type": "fullstack",
+      "description": "Enterprise-grade full-stack solution with React frontend, NestJS backend, and Shadcn UI",
+      "languages": ["typescript"],
+      "templates": ["react-nest-shadcn-template"]
+    },
+    "remixjs": {
+      "type": "frontend",
+      "description": "Full-stack web framework focused on web standards",
+      "languages": ["typescript"],
+      "ui": ["shadcn"],
+      "options": ["tailwind"],
+      "templates": [
+        "shadcn-tailwind-template",
+        "no-shadcn-no-tailwind-template",
+        "no-shadcn-tailwind-template"
+      ]
+    },
+    "ruby": {
+      "type": "backend",
+      "description": "Dynamic, open source programming language with a focus on simplicity and productivity",
+      "languages": ["ruby"],
+      "templates": [
+        "rails_7_esbuild_hotwire_tailwindcss_starter",
+        "ruby-on-rails-apis-template",
+        "ruby-on-rails-boilerplate-template"
+      ]
+    },
+    "rust": {
+      "type": "backend",
+      "description": "Systems programming language focused on safety and performance",
+      "languages": ["rust"],
+      "templates": ["advance-rust-template", "basic-rust-template"]
+    },
+    "vuejs": {
+      "type": "frontend",
+      "description": "Progressive JavaScript framework for building UIs",
+      "languages": ["javascript", "typescript"],
+      "ui": ["headless-ui"],
+      "options": ["tailwind"],
+      "templates": [
+        "headless-tailwind-template",
+        "no-headless-no-tailwind-template"
+      ]
+    }
+  }
+}

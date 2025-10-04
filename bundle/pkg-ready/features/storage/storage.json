@@ -1,0 +1,371 @@
+{
+        "cloudinary": {
+          "expressjs": {
+            "javascript": {
+              ".env": {
+                "action": "append"
+              },
+              "controllers/cloudinaryControllers.js": {
+                "action": "create"
+              },
+              "index.js": {
+                "action": "prepend"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "routes/cloudinaryRoutes.js": {
+                "action": "create"
+              },
+              "utils/cloudinary.js": {
+                "action": "create"
+              }
+            },
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "controllers/cloudinaryControllers.ts": {
+                "action": "create"
+              },
+              "index.ts": {
+                "action": "prepend"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "routes/cloudinaryRoutes.ts": {
+                "action": "create"
+              },
+              "utils/cloudinary.ts": {
+                "action": "create"
+              }
+            }
+          },
+          "nestjs": {
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "src/cloudinary/cloudinary.controller.ts": {
+                "action": "create"
+              },
+              "src/cloudinary/cloudinary.module.ts": {
+                "action": "create"
+              },
+              "src/cloudinary/cloudinary.service.ts": {
+                "action": "create"
+              }
+            }
+          },
+          "nextjs": {
+            "javascript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/api/cloudinary/delete/route.js": {
+                "action": "create"
+              },
+              "app/api/cloudinary/list/route.js": {
+                "action": "create"
+              },
+              "app/api/cloudinary/upload/route.js": {
+                "action": "create"
+              },
+              "lib/cloudinary.js": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            },
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/api/cloudinary/delete/route.ts": {
+                "action": "create"
+              },
+              "app/api/cloudinary/list/route.ts": {
+                "action": "create"
+              },
+              "app/api/cloudinary/upload/route.ts": {
+                "action": "create"
+              },
+              "lib/cloudinary.ts": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            }
+          },
+          "remixjs": {
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/routes/api/cloudinary.ts": {
+                "action": "create"
+              },
+              "app/utils/cloudinary.ts": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            }
+          }
+        },
+        "google-cloud": {
+          "expressjs": {
+            "javascript": {
+              ".env": {
+                "action": "append"
+              },
+              "controllers/gcsControllers.js": {
+                "action": "create"
+              },
+              "index.js": {
+                "action": "prepend"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "routes/gcsRoutes.js": {
+                "action": "create"
+              },
+              "utils/gcs.js": {
+                "action": "create"
+              }
+            },
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "controllers/gcsControllers.ts": {
+                "action": "create"
+              },
+              "index.ts": {
+                "action": "prepend"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "routes/gcsRoutes.ts": {
+                "action": "create"
+              },
+              "utils/gcs.ts": {
+                "action": "create"
+              }
+            }
+          },
+          "nestjs": {
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "src/gcs/gcs.controller.ts": {
+                "action": "create"
+              },
+              "src/gcs/gcs.module.ts": {
+                "action": "create"
+              },
+              "src/gcs/gcs.service.ts": {
+                "action": "create"
+              }
+            }
+          },
+          "nextjs": {
+            "javascript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/api/gcs/delete/route.js": {
+                "action": "create"
+              },
+              "app/api/gcs/list/route.js": {
+                "action": "create"
+              },
+              "app/api/gcs/upload/route.js": {
+                "action": "create"
+              },
+              "lib/gcs.js": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            },
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "app/api/gcs/delete/route.ts": {
+                "action": "create"
+              },
+              "app/api/gcs/list/route.ts": {
+                "action": "create"
+              },
+              "app/api/gcs/upload/route.ts": {
+                "action": "create"
+              },
+              "lib/gcs.ts": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            }
+          },
+          "remixjs": {
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "routes/api/gcs.ts": {
+                "action": "create"
+              },
+              "utils/gcs.ts": {
+                "action": "create"
+              }
+            }
+          }
+        },
+        "imagekit.io": {
+          "expressjs": {
+            "javascript": {
+              ".env": {
+                "action": "append"
+              },
+              "controllers/imageKitControllers.js": {
+                "action": "create"
+              },
+              "routes/imagekitRoutes.js": {
+                "action": "create"
+              },
+              "utils/imagekit.js": {
+                "action": "create"
+              },
+              "index.js": {
+                "action": "prepend"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "controllers/imagekitControllers.js": {
+                "action": "create"
+              }
+            },
+            "typescript": {
+              ".env": {
+                "action": "append"
+              },
+              "controllers/imageKitControllers.ts": {
+                "action": "create"
+              },
+              "routes/imagekitRoutes.ts": {
+                "action": "create"
+              },
+              "utils/imagekit.ts": {
+                "action": "create"
+              },
+              "index.ts": {
+                "action": "prepend"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "controllers/imagekitControllers.ts": {
+                "action": "create"
+              }
+            }
+          },
+          "nestjs": {
+            "typescript": {
+              "src/imagekit/imagekit.controller.ts": {
+                "action": "create"
+              },
+              "src/imagekit/imagekit.module.ts": {
+                "action": "create"
+              },
+              "src/imagekit/imagekit.service.ts": {
+                "action": "create"
+              },
+              ".env": {
+                "action": "append"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            }
+          },
+          "nextjs": {
+            "javascript": {
+              "app/api/imagekit/delete/route.js": {
+                "action": "create"
+              },
+              "app/api/imagekit/upload/route.js": {
+                "action": "create"
+              },
+              "app/api/imagekit/list/route.js": {
+                "action": "create"
+              },
+              "lib/imagekit.js": {
+                "action": "create"
+              },
+              ".env": {
+                "action": "append"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            },
+            "typescript": {
+              "app/api/imagekit/delete/route.ts": {
+                "action": "create"
+              },
+              "app/api/imagekit/upload/route.ts": {
+                "action": "create"
+              },
+              "app/api/imagekit/list/route.ts": {
+                "action": "create"
+              },
+              "lib/imagekit.ts": {
+                "action": "create"
+              },
+              ".env": {
+                "action": "append"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            }
+          },
+          "remixjs": {
+            "typescript": {
+              "app/routes/api/imagekit.ts": {
+                "action": "create"
+              },
+              "app/utils/imagekit.ts": {
+                "action": "create"
+              },
+              ".env": {
+                "action": "append"
+              },
+              "package.json": {
+                "action": "install"
+              }
+            }
+          }
+        }
+}

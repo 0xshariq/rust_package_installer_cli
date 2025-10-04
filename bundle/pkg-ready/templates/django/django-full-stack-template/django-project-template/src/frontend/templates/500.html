@@ -1,0 +1,58 @@
+{% load static i18n %}<!DOCTYPE html>
+
+<html xml:lang="{{ LANGUAGE_CODE|default:"en" }}" lang="{{ LANGUAGE_CODE|default:"en" }}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="generator" content="Powered by Django" />
+    <title>{% trans 'Internal error!' %}</title>
+    <link href="{% static 'frontend/css/screen.css' %}" rel="stylesheet" type="text/css" />
+    {% block scripts %}{% endblock %}
+  </head>
+
+  <body id="page" class="page500">
+    <div id="wrapper">
+
+      <header id="header" class="navbar navbar-expand-md navbar-light bg-light">
+        <div class="container">
+          <a class="navbar-brand" href="/">Brand</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-menu" aria-controls="main-menu" aria-expanded="false" aria-label="Menu Weergeven">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <div id="main-menu" class="navbar-collapse collapse">
+            <!-- menu here -->
+            <ul class="nav navbar-nav">
+              <li class="nav-item active">
+                  <a class="nav-link" href="/">Demo 1</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </header>
+
+      <section id="main">
+        <div id="main-content">
+          <div class="constrained">
+            <div class="container">
+
+              <h1 class="pagetitle">{% trans 'Internal error!' %}</h1>
+              <div id="content" class="clearfix">
+                {% blocktrans trimmed %}
+                <p>We're sorry but something went wrong. Please try again later.</p>
+                <p>This incident has been logged and will be addressed by an engineer as soon as possible.</p>
+                {% endblocktrans %}
+                <p class="errorpage-back-link">{% trans 'Back to the <a href="/">home page</a>.' %}
+              </div><!-- /content -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer id="footer">
+        <div class="container">
+          <p>Copyright © ... {% now "Y" %}</p>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

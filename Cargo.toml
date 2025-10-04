@@ -1,9 +1,9 @@
 [package]
 name = "package-installer-cli"
-version = "1.4.2"
+version = "1.5.0"
 authors = ["0xshariq khanshariq92213@gmail.com"]
 edition = "2021"
-description = "A cross-platform CLI for scaffolding modern web applications with multiple frameworks and languages. Downloads and caches the Node.js CLI automatically."
+description = "A cross-platform CLI for scaffolding modern web applications. Uses bundled CLI with all dependencies included - no manual installation required."
 license = "MIT"
 repository = "https://github.com/0xshariq/rust_package_installer_cli"
 readme = "README.md"
@@ -11,10 +11,4 @@ keywords = ["cli", "scaffold", "template", "web", "framework"]
 categories = ["command-line-utilities", "development-tools"]
 
 [dependencies]
-reqwest = { version = "0.11", features = ["blocking"] }
-tokio = { version = "1.0", features = ["full"] }
-dirs = "5.0"
-tar = "0.4"
-flate2 = "1.0"
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
+# No external dependencies needed - using bundled CLI

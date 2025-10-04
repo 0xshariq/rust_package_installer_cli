@@ -1,0 +1,35 @@
+{
+  "name": "@0xshariq/package-installer",
+  "version": "3.9.0",
+  "description": "A cross-platform, interactive CLI to scaffold modern web app templates with framework, language, UI, bundler support and feature integration.",
+  "bundleDate": "2025-10-04T15:34:19.299Z",
+  "format": "ESM (ECMAScript Modules)",
+  "nodeVersion": "Node.js 20+",
+  "files": {
+    "standalone": "standalone/index.js (ESM bundle for direct Node.js execution)",
+    "executables": {
+      "linux": "executables/pkg-ready-linux",
+      "macos": "executables/pkg-ready-macos",
+      "windows": "executables/pkg-ready-win.exe"
+    },
+    "assets": {
+      "templates": "assets/templates/ (all project templates)",
+      "features": "assets/features/ (all feature definitions)",
+      "templateConfig": "assets/template.json (template configuration)",
+      "dist": "assets/dist/ (compiled TypeScript)",
+      "packageJson": "assets/package.json (version and metadata)"
+    }
+  },
+  "usage": {
+    "standalone": "node standalone/index.js [command] [options]",
+    "executable": "./executables/pkg-ready-linux [command] [options] (or equivalent for your platform)"
+  },
+  "bundleContents": {
+    "allDependencies": "All npm dependencies bundled using ESM format",
+    "templates": "Complete template library for React, Next.js, Vue, Angular, etc.",
+    "features": "Feature definitions for auth, database, AWS, Docker, etc.",
+    "config": "Template configuration and metadata",
+    "crossPlatform": "Native executables for Linux, macOS, and Windows",
+    "noWarnings": "ESM-only bundle eliminates import.meta compatibility issues"
+  }
+}

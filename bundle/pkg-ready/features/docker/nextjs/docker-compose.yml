@@ -1,0 +1,76 @@
+# Next.js Docker Compose Configuration
+# Created by Package Installer CLI
+
+version: '3.8'
+
+services:
+  nextjs-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+      # Add your environment variables here
+      # - DATABASE_URL=postgresql://username:password@db:5432/dbname
+      # - REDIS_URL=redis://redis:6379
+    depends_on:
+      # Uncomment if using database
+      # - db
+      # - redis
+    volumes:
+      # Mount for development (uncomment for dev mode)
+      # - .:/app
+      # - /app/node_modules
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # PostgreSQL Database (uncomment if needed)
+  # db:
+  #   image: postgres:15-alpine
+  #   environment:
+  #     - POSTGRES_USER=username
+  #     - POSTGRES_PASSWORD=password
+  #     - POSTGRES_DB=dbname
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   networks:
+  #     - app-network
+
+  # Redis Cache (uncomment if needed)
+  # redis:
+  #   image: redis:7-alpine
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   networks:
+  #     - app-network
+
+  # Nginx Reverse Proxy (uncomment for production)
+  # nginx:
+  #   image: nginx:alpine
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf
+  #     - ./ssl:/etc/nginx/ssl
+  #   depends_on:
+  #     - nextjs-app
+  #   networks:
+  #     - app-network
+
+volumes:
+  # Uncomment volumes as needed
+  # postgres_data:
+  # redis_data:
+
+networks:
+  app-network:
+    driver: bridge

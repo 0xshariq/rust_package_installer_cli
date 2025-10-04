@@ -2,12 +2,7 @@ use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use reqwest::blocking::Client;
-use dirs::cache_dir;
 
-const GITHUB_REPO: &str = "0xshariq/rust_package_installer_cli";
-const CLI_VERSION: &str = "latest"; // You can make this configurable
-const CACHE_DIR_NAME: &str = ".package-installer-cli";
 const LOCAL_CLI_DIR: &str = "node_modules/@0xshariq/package-installer";
 
 fn main() {
@@ -27,25 +22,14 @@ fn main() {
             args.iter().skip(2).cloned().collect::<Vec<String>>()
         };
         
-        // Ensure CLI is downloaded and cached
-        let cli_path = ensure_cli_available().expect("Failed to download or find CLI");
-        
-        // Run the CLI
-        match Command::new("node")
-            .arg(&cli_path)
-            .args(&cli_args)
-            .status() {
-            Ok(status) => {
-                std::process::exit(status.code().unwrap_or(1));
+        // Find and run the CLI
+        match find_and_run_cli(&cli_args) {
+            Ok(exit_code) => {
+                std::process::exit(exit_code);
             }
             Err(e) => {
                 println!("❌ Failed to execute the CLI: {}", e);
-                println!("");
-                println!("This could be due to:");
-                println!("1. Node.js is not installed - Visit: https://nodejs.org/en/download/");
-                println!("2. Missing dependencies - Check the manual installation instructions above");
-                println!("3. Corrupted cache - Try deleting the cache directory and running again");
-                println!("   Cache location: {:?}", get_cache_dir().unwrap_or_default());
+                print_usage_instructions();
                 std::process::exit(1);
             }
         }
@@ -102,10 +86,31 @@ fn ensure_cli_available() -> Result<PathBuf, Box<dyn std::error::Error>> {
     }
 }
 
-fn check_local_installation() -> Result<PathBuf, Box<dyn std::error::Error>> {
+fn find_and_run_cli(cli_args: &[String]) -> Result<i32, Box<dyn std::error::Error>> {
+    // Try different CLI options in order of preference
+    
+    // 1. Check for local npm installation
+    if let Ok(exit_code) = try_local_installation(cli_args) {
+        return Ok(exit_code);
+    }
+    
+    // 2. Try bundled standalone version
+    if let Ok(exit_code) = try_bundled_standalone(cli_args) {
+        return Ok(exit_code);
+    }
+    
+    // 3. Try bundled executable for current platform
+    if let Ok(exit_code) = try_bundled_executable(cli_args) {
+        return Ok(exit_code);
+    }
+    
+    Err("No CLI installation found".into())
+}
+
+fn try_local_installation(cli_args: &[String]) -> Result<i32, Box<dyn std::error::Error>> {
     let current_dir = env::current_dir()?;
     
-    // Check in current directory first
+    // Check for local npm installations
     let local_paths = vec![
         current_dir.join(LOCAL_CLI_DIR).join("dist").join("index.js"),
         current_dir.join("node_modules").join("@0xshariq").join("package-installer").join("dist").join("index.js"),
@@ -114,11 +119,12 @@ fn check_local_installation() -> Result<PathBuf, Box<dyn std::error::Error>> {
     
     for path in &local_paths {
         if path.exists() {
-            return Ok(path.clone());
+            println!("✅ Using locally installed CLI from node_modules");
+            return run_node_cli(path, cli_args);
         }
     }
     
-    // Check parent directories (up to 5 levels) for local installation
+    // Check parent directories (up to 5 levels)
     let mut check_dir = current_dir.as_path();
     for _ in 0..5 {
         for local_path in &[
@@ -127,7 +133,8 @@ fn check_local_installation() -> Result<PathBuf, Box<dyn std::error::Error>> {
         ] {
             let full_path = check_dir.join(local_path);
             if full_path.exists() {
-                return Ok(full_path);
+                println!("✅ Using locally installed CLI from node_modules");
+                return run_node_cli(&full_path, cli_args);
             }
         }
         
@@ -141,6 +148,84 @@ fn check_local_installation() -> Result<PathBuf, Box<dyn std::error::Error>> {
     Err("No local installation found".into())
 }
 
+fn try_bundled_standalone(cli_args: &[String]) -> Result<i32, Box<dyn std::error::Error>> {
+    // Get the directory where this binary is located
+    let exe_path = env::current_exe()?;
+    let exe_dir = exe_path.parent().ok_or("Cannot determine executable directory")?;
+    
+    // Check for bundled standalone version relative to the binary
+    let standalone_path = exe_dir.join("bundle").join("standalone").join("index.js");
+    
+    if standalone_path.exists() {
+        println!("✅ Using bundled standalone CLI");
+        return run_node_cli(&standalone_path, cli_args);
+    }
+    
+    // Also check in the current working directory (for development)
+    let current_dir = env::current_dir()?;
+    let standalone_dev_path = current_dir.join("bundle").join("standalone").join("index.js");
+    
+    if standalone_dev_path.exists() {
+        println!("✅ Using bundled standalone CLI (development)");
+        return run_node_cli(&standalone_dev_path, cli_args);
+    }
+    
+    Err("Bundled standalone CLI not found".into())
+}
+
+fn try_bundled_executable(cli_args: &[String]) -> Result<i32, Box<dyn std::error::Error>> {
+    // Get the directory where this binary is located
+    let exe_path = env::current_exe()?;
+    let exe_dir = exe_path.parent().ok_or("Cannot determine executable directory")?;
+    
+    // Determine the executable name based on the platform
+    let exe_name = if cfg!(target_os = "windows") {
+        "package-installer-win.exe"
+    } else if cfg!(target_os = "macos") {
+        "package-installer-macos"
+    } else {
+        "package-installer-linux"
+    };
+    
+    // Check for bundled executable relative to the binary
+    let bundled_exe_path = exe_dir.join("bundle").join("executables").join(exe_name);
+    
+    if bundled_exe_path.exists() {
+        println!("✅ Using bundled native executable");
+        return run_native_cli(&bundled_exe_path, cli_args);
+    }
+    
+    // Also check in the current working directory (for development)
+    let current_dir = env::current_dir()?;
+    let bundled_exe_dev_path = current_dir.join("bundle").join("executables").join(exe_name);
+    
+    if bundled_exe_dev_path.exists() {
+        println!("✅ Using bundled native executable (development)");
+        return run_native_cli(&bundled_exe_dev_path, cli_args);
+    }
+    
+    Err("Bundled executable not found".into())
+}
+
+fn run_node_cli(cli_path: &Path, cli_args: &[String]) -> Result<i32, Box<dyn std::error::Error>> {
+    let status = Command::new("node")
+        .arg(cli_path)
+        .args(cli_args)
+        .status()
+        .map_err(|e| format!("Failed to run Node.js CLI. Make sure Node.js is installed: {}", e))?;
+    
+    Ok(status.code().unwrap_or(1))
+}
+
+fn run_native_cli(exe_path: &Path, cli_args: &[String]) -> Result<i32, Box<dyn std::error::Error>> {
+    let status = Command::new(exe_path)
+        .args(cli_args)
+        .status()
+        .map_err(|e| format!("Failed to run native executable: {}", e))?;
+    
+    Ok(status.code().unwrap_or(1))
+}
+
 fn get_cache_dir() -> Result<PathBuf, Box<dyn std::error::Error>> {
     let cache_base = cache_dir().ok_or("Could not determine cache directory")?;
     let cache_path = cache_base.join(CACHE_DIR_NAME);
@@ -152,220 +237,34 @@ fn get_cache_dir() -> Result<PathBuf, Box<dyn std::error::Error>> {
     Ok(cache_path)
 }
 
-fn download_cli(cache_dir: &Path) -> Result<(), Box<dyn std::error::Error>> {
-    let client = Client::new();
-    
-    // Get the latest release info
-    let release_url = format!("https://api.github.com/repos/{}/releases/{}", GITHUB_REPO, CLI_VERSION);
-    let release_response = client.get(&release_url)
-        .header("User-Agent", "package-installer-cli-rust-wrapper")
-        .send()?;
-    
-    if !release_response.status().is_success() {
-        return Err(format!("Failed to fetch release info: {}", release_response.status()).into());
-    }
-    
-    let release_text = release_response.text()?;
-    let release_json: serde_json::Value = serde_json::from_str(&release_text)?;
-    
-    // Find the tarball URL
-    let tarball_url = release_json["tarball_url"]
-        .as_str()
-        .ok_or("Could not find tarball URL in release")?;
-    
-    println!("Downloading from: {}", tarball_url);
-    
-    // Download the tarball
-    let tarball_response = client.get(tarball_url)
-        .header("User-Agent", "package-installer-cli-rust-wrapper")
-        .send()?;
-    
-    if !tarball_response.status().is_success() {
-        return Err(format!("Failed to download tarball: {}", tarball_response.status()).into());
-    }
-    
-    let tarball_bytes = tarball_response.bytes()?;
-    
-    // Extract the tarball
-    let tar = flate2::read::GzDecoder::new(&tarball_bytes[..]);
-    let mut archive = tar::Archive::new(tar);
-    
-    // Extract to a temporary directory first
-    let temp_dir = cache_dir.join("temp");
-    if temp_dir.exists() {
-        fs::remove_dir_all(&temp_dir)?;
-    }
-    fs::create_dir_all(&temp_dir)?;
-    
-    archive.unpack(&temp_dir)?;
-    
-    // Find the extracted directory (GitHub creates a directory with repo name and commit hash)
-    let mut extracted_dir = None;
-    for entry in fs::read_dir(&temp_dir)? {
-        let entry = entry?;
-        if entry.file_type()?.is_dir() {
-            extracted_dir = Some(entry.path());
-            break;
-        }
-    }
-    
-    let extracted_dir = extracted_dir.ok_or("Could not find extracted directory")?;
-    
-    // Copy the entire project to cache (including package.json and dependencies info)
-    copy_dir_all(&extracted_dir, cache_dir)?;
-    
-    // Install Node.js dependencies
-    println!("Installing Node.js dependencies...");
-    install_dependencies(cache_dir)?;
-    
-    // Clean up temp directory
-    fs::remove_dir_all(&temp_dir)?;
-    
-    Ok(())
-}
-
-fn copy_dir_all(src: impl AsRef<Path>, dst: impl AsRef<Path>) -> std::io::Result<()> {
-    fs::create_dir_all(&dst)?;
-    for entry in fs::read_dir(src)? {
-        let entry = entry?;
-        let ty = entry.file_type()?;
-        if ty.is_dir() {
-            copy_dir_all(entry.path(), dst.as_ref().join(entry.file_name()))?;
-        } else {
-            fs::copy(entry.path(), dst.as_ref().join(entry.file_name()))?;
-        }
-    }
-    Ok(())
-}
-
-fn install_dependencies(cache_dir: &Path) -> Result<(), Box<dyn std::error::Error>> {
-    let package_json_path = cache_dir.join("package.json");
-    
-    // Check if package.json exists
-    if !package_json_path.exists() {
-        return Err("package.json not found in the downloaded CLI".into());
-    }
-    
-    // Determine which package manager to use
-    let package_manager = detect_package_manager(cache_dir);
-    
-    println!("Installing dependencies using {}...", package_manager);
-    println!("This may take a few moments...");
-    
-    // Run the package manager install command
-    let mut cmd = Command::new(&package_manager);
-    
-    match package_manager.as_str() {
-        "pnpm" => {
-            cmd.arg("install").arg("--production").arg("--silent");
-        }
-        "yarn" => {
-            cmd.arg("install").arg("--production").arg("--silent");
-        }
-        "npm" => {
-            cmd.arg("install").arg("--production").arg("--silent");
-        }
-        _ => {
-            print_manual_installation_instructions(cache_dir);
-            return Err(format!("Unsupported package manager: {}", package_manager).into());
-        }
-    }
-    
-    let result = cmd
-        .current_dir(cache_dir)
-        .status();
-    
-    match result {
-        Ok(status) => {
-            if status.success() {
-                println!("✅ Dependencies installed successfully!");
-                Ok(())
-            } else {
-                println!("❌ Failed to install dependencies automatically.");
-                print_manual_installation_instructions(cache_dir);
-                Err(format!("Dependencies installation failed with {}", package_manager).into())
-            }
-        }
-        Err(e) => {
-            println!("❌ Failed to run {} install command.", package_manager);
-            print_manual_installation_instructions(cache_dir);
-            Err(format!("Failed to run {} install. Error: {}", package_manager, e).into())
-        }
-    }
-}
-
-fn detect_package_manager(cache_dir: &Path) -> String {
-    // Check for lock files to determine the package manager
-    if cache_dir.join("pnpm-lock.yaml").exists() {
-        // Check if pnpm is available
-        if Command::new("pnpm").arg("--version").output().is_ok() {
-            return "pnpm".to_string();
-        }
-    }
-    
-    if cache_dir.join("yarn.lock").exists() {
-        // Check if yarn is available
-        if Command::new("yarn").arg("--version").output().is_ok() {
-            return "yarn".to_string();
-        }
-    }
-    
-    // Default to npm
-    "npm".to_string()
-}
-
-fn dependencies_installed(cache_dir: &Path) -> bool {
-    let node_modules_path = cache_dir.join("node_modules");
-    node_modules_path.exists() && node_modules_path.is_dir()
-}
-
-fn print_manual_installation_instructions(cache_dir: &Path) {
-    println!("\n📋 MANUAL INSTALLATION REQUIRED:");
+fn print_usage_instructions() {
+    println!("\n📋 CLI NOT FOUND:");
     println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-    println!("The CLI requires Node.js dependencies to function properly.");
-    println!("You have two options:");
+    println!("The Package Installer CLI was not found. Here are your options:");
     println!("");
     
-    println!("🌍 OPTION 1: Install as a local dependency (Recommended)");
-    println!("   This will install the CLI with all its dependencies in your project:");
+    println!("🌍 OPTION 1: Install locally via npm (Recommended)");
+    println!("   npm install @0xshariq/package-installer");
+    println!("   npx pi create my-app");
+    println!("");
     
-    // Check which package managers are available
-    let mut available_managers = Vec::new();
+    println!("🔧 OPTION 2: Use the bundled version");
+    println!("   Make sure the 'bundle/' directory is available alongside this executable");
+    println!("   The bundle should contain either:");
+    println!("   - bundle/standalone/index.js (Node.js required)");
+    println!("   - bundle/executables/package-installer-[platform] (native executable)");
+    println!("");
     
-    if Command::new("npm").arg("--version").output().is_ok() {
-        available_managers.push("npm install @0xshariq/package-installer");
-    }
-    if Command::new("yarn").arg("--version").output().is_ok() {
-        available_managers.push("yarn add @0xshariq/package-installer");
-    }
-    if Command::new("pnpm").arg("--version").output().is_ok() {
-        available_managers.push("pnpm add @0xshariq/package-installer");
-    }
-    
-    if available_managers.is_empty() {
-        println!("   ❌ No package manager found! Please install Node.js and npm first:");
-        println!("      Visit: https://nodejs.org/en/download/");
+    println!("� REQUIREMENTS:");
+    if cfg!(target_os = "windows") {
+        println!("   - For Node.js version: Install Node.js from https://nodejs.org");
+        println!("   - For native executable: No additional requirements");
     } else {
-        for manager in &available_managers {
-            println!("   {}", manager);
-        }
-        println!("   Then run: npx pi [command] or node_modules/.bin/pi [command]");
+        println!("   - For Node.js version: Install Node.js (recommended)");  
+        println!("   - For native executable: No additional requirements");
     }
     
     println!("");
-    println!("🔧 OPTION 2: Fix the global installation dependencies");
-    println!("   Navigate to the CLI cache directory and install dependencies:");
-    println!("   cd {:?}", cache_dir);
-    
-    for manager in available_managers {
-        let install_cmd = manager.replace("@0xshariq/package-installer", "").replace("add", "install").replace("install ", "install --production");
-        println!("   {}", install_cmd);
-    }
-    
-    println!("");
-    println!("💡 TIP: For better performance and reliability, we recommend using Option 1.");
-    println!("   The local installation will always have the correct dependencies.");
-    println!("");
-    println!("3. After installation, run the CLI command again.");
+    println!("� More info: https://github.com/0xshariq/rust_package_installer_cli");
     println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 }

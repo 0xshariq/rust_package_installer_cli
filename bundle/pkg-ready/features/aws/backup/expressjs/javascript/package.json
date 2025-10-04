@@ -1,0 +1,5 @@
+{
+    "dependencies": {
+        "@aws-sdk/client-backup": "^3.883.0"
+    }
+}

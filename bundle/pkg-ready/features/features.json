@@ -1,0 +1,249 @@
+{
+  "features": {
+    "ai": {
+      "description": "AI integration code for enhanced user experiences",
+      "supportedFrameworks": ["nextjs", "expressjs", "nestjs", "remixjs"],
+      "supportedLanguages": ["javascript", "typescript"],
+      "supportedAIs": ["gemini", "grok", "open-ai", "open-router", "claude"],
+      "jsonPath": "./ai/ai.json"
+    },
+    "analytics": {
+      "description": "Analytics integration for enhanced functionality",
+      "supportedFrameworks": ["nextjs", "expressjs", "nestjs", "remixjs"],
+      "supportedLanguages": ["javascript", "typescript"],
+      "supportedAnalytics": ["plausible", "posthog"],
+      "jsonPath": "./analytics/analytics.json"
+    },
+    "auth": {
+      "description": "Authentication and authorization features",
+      "supportedFrameworks": [
+        "nextjs",
+        "expressjs",
+        "nestjs",
+        "remixjs",
+        "angularjs",
+        "vuejs",
+        "reactjs",
+        "django",
+        "go",
+        "ruby-on-rails"
+      ],
+      "supportedLanguages": ["javascript", "typescript"],
+      "supportedAuths": ["auth0", "clerk", "next-auth"],
+      "jsonPath": "./auth/auth.json"
+    },
+    "aws": {
+      "description": "AWS integration and deployment features",
+      "supportedFrameworks": ["nextjs", "expressjs", "nestjs", "remixjs"],
+      "supportedLanguages": ["javascript", "typescript"],
+      "supportedAwsServices": [
+        "api-gateway",
+        "app-sync",
+        "athena",
+        "aurora",
+        "backup-gateway",
+        "braket",
+        "cloudformation",
+        "cloudfront",
+        "cloudtrail",
+        "cloudwatch",
+        "codebuild",
+        "codecommit",
+        "codedeploy",
+        "codepipeline",
+        "cognito",
+        "config",
+        "connect",
+        "control-tower",
+        "database-migration-service",
+        "datasync",
+        "documentdb",
+        "dynamodb",
+        "ebs",
+        "ec2",
+        "ec2-auto-scaling",
+        "ecs",
+        "efs",
+        "eks",
+        "elasticache",
+        "elb",
+        "event-bridge",
+        "fargate",
+        "firehose",
+        "forecast",
+        "glue",
+        "iam",
+        "kinesis",
+        "kms",
+        "lambda",
+        "lex",
+        "mediaconvert",
+        "medialive",
+        "mediastore",
+        "neptune",
+        "organizations",
+        "personalize",
+        "pinpoint",
+        "quicksight",
+        "rds",
+        "redshift",
+        "route-53",
+        "s3",
+        "s3-glacier",
+        "s3-glacier-deep-archive",
+        "secrets-manager",
+        "service-catalog",
+        "shield",
+        "simple-email-service",
+        "snowball",
+        "snowmobile",
+        "sso",
+        "storage-gateway",
+        "sts",
+        "systems-manager",
+        "textract",
+        "translate",
+        "trustedAdvisor",
+        "vpc",
+        "waf",
+        "x-ray"
+      ],
+      "jsonPath": "./aws/aws.json"
+    },
+    "database": {
+      "description": "Database integration with orm selection and management features",
+      "supportedFrameworks": [
+        "nextjs",
+        "expressjs",
+        "nestjs",
+        "remixjs",
+        "mongoose",
+        "typegoose",
+        "GORM",
+        "Peewee",
+        "SQLAlchemy",
+        "Sequel",
+        "djangoORM",
+        "drizzle",
+        "prisma",
+        "typeorm"
+      ],
+      "supportedLanguages": [
+        "javascript",
+        "go",
+        "python",
+        "ruby",
+        "typescript"
+      ],
+      "supportedDatabases": ["mongodb", "supabase", "neondb"],
+      "supportedORMs": {
+        "mongodb": {
+          "mongoose": ["javascript", "typescript"],
+          "typegoose": ["typescript"]
+        },
+        "mysql": {
+          "typeorm": ["javascript", "typescript"],
+          "prisma": ["typescript"],
+          "drizzle": ["typescript"],
+          "djangoORM": ["python"],
+          "SQLAlchemy": ["python"],
+          "Peewee": ["python"],
+          "GORM": ["go"],
+          "Sequel": ["ruby"]
+        },
+        "postgres": {
+          "typeorm": ["javascript", "typescript"],
+          "prisma": ["typescript"],
+          "drizzle": ["typescript"],
+          "djangoORM": ["python"],
+          "SQLAlchemy": ["python"],
+          "Peewee": ["python"],
+          "GORM": ["go"],
+          "Sequel": ["ruby"]
+        }
+      },
+      "jsonPath": "./database/database.json"
+    },
+    "docker": {
+      "description": "Docker Config Files",
+      "supportedFrameworks": [
+        "nextjs",
+        "expressjs",
+        "nestjs",
+        "remixjs",
+        "angularjs",
+        "vuejs",
+        "reactjs"
+      ],
+      "supportedLanguages": [
+        "javascript",
+        "go",
+        "python",
+        "ruby",
+        "rust",
+        "typescript"
+      ],
+      "jsonPath": "./docker/docker.json"
+    },
+    "gitignore": {
+      "description": "GitIgnore files for various frameworks and languages",
+      "supportedFrameworks": ["nextjs", "angularjs", "nestjs"],
+      "supportedLanguages": [
+        "javascript",
+        "go",
+        "python",
+        "rust",
+        "typescript"
+      ],
+      "jsonPath": "./gitignore/gitignore.json"
+    },
+    "monitoring": {
+      "description": "Monitoring integration for enhanced functionality",
+      "supportedFrameworks": ["nextjs", "expressjs", "nestjs", "remixjs"],
+      "supportedLanguages": ["javascript", "typescript"],
+      "supportedMonitoring": ["sentry", "datadog", "opentelemetry"],
+      "jsonPath": "./monitoring/monitoring.json"
+    },
+    "payment": {
+      "description": "Payment integration code for multiple payment gateways",
+      "supportedFrameworks": [
+        "nextjs",
+        "expressjs",
+        "nestjs",
+        "remixjs",
+        "vuejs"
+      ],
+      "supportedLanguages": ["javascript", "typescript"],
+      "supportedPayments": ["stripe", "razorpay", "paypal"],
+      "jsonPath": "./payment/payment.json"
+    },
+    "storage": {
+      "description": "Storage Integration for files, images, and videos",
+      "supportedFrameworks": ["nextjs", "expressjs", "nestjs", "remixjs"],
+      "supportedLanguages": ["javascript", "typescript"],
+      "supportedStorages": ["imagekit.io", "cloudinary", "google-cloud"],
+      "jsonPath": "./storage/storage.json"
+    },
+    "testing": {
+      "description": "Testing integration for enhanced functionality",
+      "supportedFrameworks": ["nextjs", "expressjs", "nestjs", "remixjs"],
+      "supportedLanguages": ["javascript", "typescript"],
+      "supportedTesting": ["jest", "cypress", "mocha", "playwright"],
+      "jsonPath": "./testing/testing.json"
+    },
+    "ui": {
+      "description": "UI Libraries features for various frameworks",
+      "supportedFrameworks": [
+        "nextjs",
+        "angularjs",
+        "reactjs",
+        "vuejs",
+        "django",
+        "nuxtjs"
+      ],
+      "supportedLanguages": ["javascript", "python", "typescript"],
+      "supportedUiLibraries": ["daisy"],
+      "jsonPath": "./ui/ui.json"
+    }
+  }
+}

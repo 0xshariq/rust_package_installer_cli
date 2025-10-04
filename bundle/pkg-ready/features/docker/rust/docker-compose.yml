@@ -1,0 +1,120 @@
+# Rust Docker Compose Configuration
+# Created by Package Installer CLI
+
+version: '3.8'
+
+services:
+  rust-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - RUST_LOG=info
+      - PORT=8000
+      # Database configuration
+      # - DATABASE_URL=postgresql://username:password@postgres:5432/rustdb
+      # - REDIS_URL=redis://redis:6379
+      # External services
+      # - JWT_SECRET=your-super-secret-jwt-key
+      # - SMTP_HOST=smtp.gmail.com
+      # - SMTP_PORT=587
+    depends_on:
+      postgres:
+        condition: service_healthy
+      # redis:
+      #   condition: service_started
+    volumes:
+      # Mount for logs
+      - ./logs:/app/logs
+      # Development mode (uncomment for dev)
+      # - .:/app
+      # - ./target:/app/target
+    restart: unless-stopped
+    networks:
+      - rust-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=username
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=rustdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    networks:
+      - rust-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U username -d rustdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Redis Cache (uncomment if needed)
+  # redis:
+  #   image: redis:7-alpine
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   command: redis-server --appendonly yes
+  #   networks:
+  #     - rust-network
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 10s
+  #     timeout: 3s
+  #     retries: 3
+  #   restart: unless-stopped
+
+  # Development service with hot reload (uncomment for development)
+  # rust-dev:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.dev
+  #   ports:
+  #     - "8000:8000"
+  #   volumes:
+  #     - .:/app
+  #     - ./target:/app/target
+  #   environment:
+  #     - RUST_LOG=debug
+  #     - DATABASE_URL=postgresql://username:password@postgres:5432/rustdb
+  #   command: cargo watch -x run
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - rust-network
+
+  # PgAdmin (uncomment for development)
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   environment:
+  #     - PGADMIN_DEFAULT_EMAIL=admin@example.com
+  #     - PGADMIN_DEFAULT_PASSWORD=admin
+  #   ports:
+  #     - "5050:80"
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - rust-network
+
+volumes:
+  postgres_data:
+  # redis_data:
+
+networks:
+  rust-network:
+    driver: bridge

@@ -1,0 +1,5 @@
+{
+    "dependencies": {
+        "@aws-sdk/client-storage-gateway": "^3.883.0"
+    }
+}

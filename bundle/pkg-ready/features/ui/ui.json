@@ -1,0 +1,91 @@
+ {
+        "daisy": {
+          "angularjs": {
+            "typescript": {
+              ".postcssrc.json": {
+                "action": "create"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "src/styles.css": {
+                "action": "prepend"
+              }
+            }
+          },
+          "nextjs": {
+            "javascript": {
+              "app/globals.css": {
+                "action": "prepend"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "postcss.config.mjs": {
+                "action": "create"
+              }
+            },
+            "typescript": {
+              "app/globals.css": {
+                "action": "prepend"
+              },
+              "package.json": {
+                "action": "install"
+              },
+              "postcss.config.mjs": {
+                "action": "create"
+              }
+            }
+          },
+          "reactjs": {
+            "javascript": {
+              "package.json": {
+                "action": "install"
+              },
+              "src/index.css": {
+                "action": "prepend"
+              },
+              "vite.config.js": {
+                "action": "overwrite"
+              }
+            },
+            "typescript": {
+              "package.json": {
+                "action": "install"
+              },
+              "src/index.css": {
+                "action": "prepend"
+              },
+              "vite.config.ts": {
+                "action": "overwrite"
+              }
+            }
+          },
+          "vuejs": {
+            "javascript": {
+              "package.json": {
+                "action": "install"
+              },
+              "src/assets/main.css": {
+                "action": "prepend"
+              },
+              "vite.config.ts": {
+                "action": "overwrite"
+              }
+            },
+            "typescript": {
+              "package.json": {
+                "action": "install"
+              },
+              "src/assets/main.css": {
+                "action": "prepend"
+              },
+              "vite.config.ts": {
+                "action": "overwrite"
+              }
+            }
+          },
+          "django": {},
+          "nuxtjs": {}
+        }
+      }

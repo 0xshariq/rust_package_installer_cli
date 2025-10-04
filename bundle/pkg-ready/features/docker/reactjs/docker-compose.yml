@@ -1,0 +1,78 @@
+# React.js Docker Compose Configuration
+# Created by Package Installer CLI
+
+version: '3.8'
+
+services:
+  react-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    environment:
+      # Add your environment variables here
+      # - REACT_APP_API_URL=http://localhost:3001
+      # - REACT_APP_ENV=production
+    depends_on:
+      # Uncomment if using backend API
+      # - backend
+    volumes:
+      # Mount for development (uncomment for dev mode)
+      # - .:/app
+      # - /app/node_modules
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # Backend API (uncomment if needed)
+  # backend:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3001:3001"
+  #   environment:
+  #     - NODE_ENV=production
+  #     - DATABASE_URL=postgresql://username:password@db:5432/dbname
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     - app-network
+
+  # PostgreSQL Database (uncomment if needed)
+  # db:
+  #   image: postgres:15-alpine
+  #   environment:
+  #     - POSTGRES_USER=username
+  #     - POSTGRES_PASSWORD=password
+  #     - POSTGRES_DB=dbname
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   networks:
+  #     - app-network
+
+  # Development mode service (uncomment for development)
+  # react-dev:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.dev
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - .:/app
+  #     - /app/node_modules
+  #   environment:
+  #     - CHOKIDAR_USEPOLLING=true
+  #   networks:
+  #     - app-network
+
+volumes:
+  # Uncomment volumes as needed
+  # postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
