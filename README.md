@@ -1,31 +1,55 @@
-# 📦 Package Installer CLI
+# Package Installer CLI (Rust Wrapper)
 
+[![Crates.io](https://img.shields.io/crates/v/package-installer-cli.svg)](https://crates.io/crates/package-installer-cli)
 [![npm version](https://img.shields.io/npm/v/@0xshariq/package-installer.svg)](https://www.npmjs.com/package/@0xshariq/package-installer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen.svg)](https://nodejs.org/)
 
-A **cross-platform, interactive CLI** to scaffold modern web application templates with support for multiple frameworks, languages, and development tools. Create production-ready projects in seconds!
+A **cross-platform, interactive CLI** to scaffold modern web application templates with support for multiple frameworks, languages, and development tools. This Rust wrapper automatically manages Node.js dependencies and provides both local and global installation options.
 
 ---
 
-## 🦀 Rust Wrapper (crates.io)
+## 🚀 Installation Options
 
-You can also install the CLI via [crates.io](https://crates.io/crates/package-installer-cli) as a Rust binary. The Rust wrapper delegates all logic to the Node.js CLI, so you do not need to rewrite your logic in Rust.
-
-### Install via Cargo
+### Option 1: Global Installation via Cargo (Recommended)
 
 ```bash
 cargo install package-installer-cli
 ```
 
+**Benefits:**
+- ✅ **Automatic Dependency Management**: Installs Node.js dependencies automatically
+- ✅ **Smart Installation Detection**: Uses local npm packages when available
+- ✅ **Cross-Platform**: Works on Windows, macOS, and Linux
+- ✅ **No Manual Setup**: Everything works out of the box
 
-This will internally run `node dist/index.js` and pass all arguments to your TypeScript CLI.
+### Option 2: Local NPM Installation
 
-### Requirements
+```bash
+# Using npm
+npm install @0xshariq/package-installer
 
-- Node.js 18.0.0 or higher must be installed
-- `dist/index.js` must be built and available
-- All CLI arguments are forwarded to the TypeScript implementation
+# Using yarn
+yarn add @0xshariq/package-installer
+
+# Using pnpm
+pnpm add @0xshariq/package-installer
+```
+
+## 🎯 How It Works
+
+The Rust wrapper intelligently manages the TypeScript CLI:
+
+1. **🔍 Local Detection**: First checks for npm/yarn/pnpm installed version in your project
+2. **📦 Auto Download**: Downloads the latest CLI from GitHub if not found locally
+3. **⚡ Dependency Installation**: Automatically installs required Node.js dependencies
+4. **💾 Smart Caching**: Caches CLI and dependencies for faster subsequent runs
+5. **🚀 Seamless Execution**: Runs the appropriate version with your commands
+
+### Prerequisites
+
+- **Node.js** (v16 or higher) - [Download here](https://nodejs.org/en/download/)
+- **Package Manager** - npm, yarn, or pnpm (npm comes with Node.js)
 
 ---
 
@@ -48,20 +72,84 @@ This will internally run `node dist/index.js` and pass all arguments to your Typ
 - **📈 Usage Tracking**: Comprehensive command and feature usage tracking
 - **⚡ Performance Insights**: Productivity scoring and usage patterns
 
-## 🎯 Quick Start
+## 🎯 Usage
+
+### Global Usage (after `cargo install`)
 
 ```bash
-# Create new project interactively
-pi create
+# Create a new project
+pi create my-app
 
-# Analyze project with enhanced dashboard
+# Get help
+pi --help
+
+# List available templates  
+pi list
+
+# Analyze existing project
 pi analyze
+```
 
-# Update project dependencies only
-pi update
+### Local Usage (after `npm install`)
 
-# Upgrade CLI to latest version
-pi upgrade-cli
+```bash
+# Using npx (recommended)
+npx pi create my-app
+
+# Using direct path
+./node_modules/.bin/pi create my-app
+
+# Add to package.json scripts
+{
+  "scripts": {
+    "scaffold": "pi create",
+    "analyze": "pi analyze"
+  }
+}
+```
+
+## 🛠️ Dependency Management
+
+### Automatic Installation ✨
+
+The CLI automatically handles dependencies on first run:
+
+```bash
+# First run - automatically installs dependencies
+pi create my-app
+# ✅ CLI found but dependencies not installed.
+# 🚀 Attempting to install dependencies automatically...
+# ✅ Dependencies installed successfully!
+```
+
+### Troubleshooting Dependencies
+
+If automatic installation fails, you have two options:
+
+#### Option 1: Local Installation (Recommended)
+Install the CLI locally with all dependencies:
+
+```bash
+npm install @0xshariq/package-installer
+npx pi create my-app
+```
+
+#### Option 2: Manual Cache Setup
+Fix the global installation:
+
+```bash
+# Navigate to cache directory (shown in error message)
+cd ~/.cache/.package-installer-cli  # Linux/macOS
+# or
+cd %LOCALAPPDATA%\.package-installer-cli  # Windows
+
+# Install dependencies manually
+npm install --production
+# or yarn install --production  
+# or pnpm install --production
+
+# Try again
+pi create my-app
 ```
 
 ## 📚 Documentation
@@ -109,18 +197,66 @@ pi upgrade-cli
 
 ## 🐛 Troubleshooting
 
-### Quick Fixes
+### Common Issues & Solutions
 
+#### "Node.js not found" Error
 ```bash
-# Clear cache and reinstall
-npm cache clean --force
-npm install -g @0xshariq/package-installer
+# Install Node.js from https://nodejs.org
+# Or use package managers:
 
-# Use npx if global installation fails
+# macOS (Homebrew)  
+brew install node
+
+# Ubuntu/Debian
+sudo apt-get install nodejs npm
+
+# Windows (Chocolatey)
+choco install nodejs
+
+# Verify installation
+node --version
+npm --version
+```
+
+#### "Dependencies installation failed"
+```bash
+# Option 1: Use local installation
+npm install @0xshariq/package-installer
+npx pi create my-app
+
+# Option 2: Clear cache and retry
+rm -rf ~/.cache/.package-installer-cli  # Linux/macOS
+pi create my-app
+
+# Option 3: Manual installation
+cd ~/.cache/.package-installer-cli
+npm install --production
+```
+
+#### "Permission denied" on Linux/macOS
+```bash
+# Fix npm permissions
+npm config set prefix ~/.npm-global
+export PATH=~/.npm-global/bin:$PATH
+
+# Or use local installation
 npx @0xshariq/package-installer create my-app
+```
 
-# Check CLI status
-pi doctor
+### Cache Management
+
+Cache locations:
+- **Linux**: `~/.cache/.package-installer-cli/`
+- **macOS**: `~/Library/Caches/.package-installer-cli/`
+- **Windows**: `%LOCALAPPDATA%\.package-installer-cli\`
+
+Clear cache:
+```bash
+# Linux/macOS
+rm -rf ~/.cache/.package-installer-cli
+
+# Windows (PowerShell)
+Remove-Item -Recurse -Force "$env:LOCALAPPDATA\.package-installer-cli"
 ```
 
 ## 🤝 Contributing
